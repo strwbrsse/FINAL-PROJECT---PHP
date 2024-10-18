@@ -21,10 +21,3 @@
         </form>
     </body>
 </html>
-
-<?
-$conn = new mysqli('localhost', 'root', '', 'shotsafe');
-
-if ($conn->connect_error){
-    
-}
