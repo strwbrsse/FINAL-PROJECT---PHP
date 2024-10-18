@@ -13,7 +13,7 @@
             <label>Password:</label><br>
             <input type="password" name="password" required><br>
 
-            <button type="submit">Login</button>
+            <button type="submit">Logout</button>
         </form>
     </body>
 </html>
