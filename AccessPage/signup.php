@@ -23,7 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("All fields are required");
     } elseif (!filter_var($user_mail, FILTER_VALIDATE_EMAIL)) {
         die("Invalid Email format!");
-    } elseif ($user_password != $conPass) {
+    } elseif(strlen($user_password) < 8) {
+        die("Password too short!");
+    }elseif ($user_password != $conPass) {
         die("Passwords didn't match!");
     } else {
         $stmt = $conn->prepare("SELECT user_mail FROM users WHERE user_mail = ?");
