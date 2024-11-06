@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <title>ShotSafe: Sign In</title> 
+</head>
+<body>
+    <div class="container">
+        <img src="ShotSafe.png" alt="ShotSafe Logo" class="logo">
+        <h1>ShotSafe: Secure and Easy Vaccination Management System</h1>
+        <h2>Streamline Vaccinations with Robust Security and User-Friendly Features.</h2>
+        <p>ShotSafe is an advanced platform designed to simplify and secure vaccination management for healthcare providers, organizations, and individuals.</p>
+    <ul>
+        <li>Manage vaccinations</li>
+        <li>Track schedules</li>
+        <li>Ensure compliance</li>
+    </ul>
+    </div>
+
+    <div class="form-container">
+        <form method="post" action="signin.php">
+            <h1>Sign In</h1>
+            <label for="name">Username</label>
+            <input type="text" id="text" name="name">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email">
+
+            <label for="pass">Password</label>
+            <input type="password" id="pass" name="pass">
+
+            <button type="submit">Sign In</button>
+        </form>
+        <p class="signup-link">Don't have an account? <a href="signup.html">Sign Up</a></p>
+    </div>
+</body>
+</html>
