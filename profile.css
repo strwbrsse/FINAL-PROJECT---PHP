@@ -1,0 +1,213 @@
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: black;
+    overflow: hidden;
+}
+
+.background {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('placeholder.gif') no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 90vh;
+    width: 90%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.content::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5); 
+    border-radius: 10px; 
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1);
+}
+
+.welcome-section {
+    max-width: 100%;
+    margin-bottom: 20px;
+    text-align: center; 
+}
+
+.welcome-section h1 {
+    font-size: 50px;
+    margin: 0;
+    color: black;
+}
+
+.welcome-section p {
+    font-size: 20px;
+    margin: 0px 0;
+    color: black;
+}
+
+.signin-section {
+    max-width: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; 
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.form-row .form-group:last-child {
+    margin-right: 0;
+}
+
+.signin-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    transition: transform 0.5s;
+    text-align: center;
+    color: black;
+}
+
+.signin-section input[type="text"], 
+.signin-section input[type="email"],
+.signin-section input[type="password"],
+.signin-section input[type="date"],
+.signin-section input[type="number"],
+.signin-section textarea {
+    font-family: 'Segoe', sans-serif;
+    box-sizing: border-box;
+    width: 100%; 
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.1); 
+    transition: transform 0.5s;
+}
+
+.signin-section select {
+    font-family: 'Segoe', sans-serif;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s;
+}
+
+.signin-section select:hover {
+    background-color: rgba(0, 0, 0, 0.2); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+}
+
+.signin-section input:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+}
+
+.signin-section button {
+    box-sizing: border-box;
+    cursor: pointer;
+    width: 101%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #5C7490;
+    border: none;
+    border-radius: 5px;
+    color: white; 
+    font-size: 18px;
+    transition: transform 0.5s;
+}
+
+.signin-section button:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1.01);
+}
+
+.signup-link {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 12px;
+}
+
+.signup-link a {
+    color: #2f288d;
+    text-decoration: underline;
+    transition-duration: 0.3s;
+}
+
+a:hover {
+    color: #2E4059;
+}
+
+.inline-group {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.inline-group label {
+    margin-right: 5px;
+}
+
+.signin-section textarea {
+    width: 100%;
+    margin-top: 5px; 
+    resize: vertical;
+    color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s;
+}
+
+.signin-section textarea:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+}
+
+.instruction {
+    margin-left: 10px;
+    font-size: 14px; 
+    color: #333;
+}

@@ -1,0 +1,125 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+}
+.background {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('placeholder.gif');
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.content {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 1200px;
+}
+.welcome-section {
+    max-width: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 1); 
+    transition: transform 0.3s;
+}
+
+.welcome-section:hover {
+    transform: scale(1.02);
+}
+
+.welcome-section h1 {
+    font-size: 100px;
+    margin: 0;
+}
+.welcome-section p {
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+.signin-section {
+    max-width: 25%;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+}
+.signin-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    transition: transform 0.05s;
+}
+
+.signin-section h2:hover {
+    transform: scale(1.05);
+}
+.signin-section input[type="text"], 
+.signin-section input[type="email"],
+.signin-section input[type="password"] {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.055);
+    transition-duration: 0.3s;
+    transition: transform (0.5s);
+}
+
+.signin-section input:hover{
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.signin-section input::placeholder{
+    color:rgba(255, 255, 255, 0.5);
+}
+
+
+.signin-section button {
+    box-sizing: border-box;
+    cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #2E4059;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition-duration: 0.3s;
+    transition: transform (0.5s) ;
+}
+
+.signin-section button:focus, 
+.signin-section input:focus {
+    outline: 2px solid #5C7490;
+    outline-offset: 2px;
+}
+
+.signin-section button:hover {
+    background-color: #5C7490;
+    transform: scale(1.05);
+}
+.signin-section .signup-link {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 12px;
+}
+.signin-section .signup-link a {
+    color: white;
+    text-decoration: underline;
+    transition-duration: 0.3s;
+}
+
+.signin-section a:hover {
+    color: #5C7490;
+}
