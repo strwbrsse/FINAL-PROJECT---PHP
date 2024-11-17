@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In Page</title>
-    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="../Assets/Styles/Style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
     <script src="sweetAlertHandler.js"></script>
 </head>
@@ -22,20 +22,19 @@
             </div>
             <div class="signin-section">
                 <h2>Sign up</h2>
-                <form action="signUp.php" method="post">
+                <form action="../BackEnd/signUp.php" method="post">
                     <input type="text" placeholder="Username" name="Name" required>
                     <input type="password" placeholder="Password" name="Pass" required>
                     <input type="password" placeholder="Confirm Password" name="ConPass" required>
                     <button type="submit">Sign in</button>
                 </form>
                 <div class="signup-link">
-                    Existing User? Sign In Now! <a href="index.html">Sign In</a>
+                    Existing User? Sign In Now! <a href="../FrontEnd/index.html">Sign In</a>
                 </div>
             </div>
         </div>
     </div>
-    <script src="text.js"></script>
-    <script src="signUp.js"></script>
+    <script src="../Assets/Scripts/text.js"></script>
 </body>
 
 </html>

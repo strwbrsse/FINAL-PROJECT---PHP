@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Registration</title>
-    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="../Assets/Styles/profile.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
     <script src="sweetAlertHandler.js"></script>
 </head>
@@ -18,11 +18,11 @@
                 <p>Please fill in the form to register.</p>
             </div>
             <div class="signup-link">
-                <p>Existing user? <a href="index.html">Sign in here</a></p>
+                <p>Existing user? <a href="../FrontEnd/index.html">Sign in here</a></p>
             </div>
             <div class="signin-section">
                 <h2>User Registration Form</h2>
-                <form action="signUp.php" method="post" id="registrationForm">
+                <form action="../BackEnd/signUp.php" method="post" id="registrationForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="fname">First Name:</label>
@@ -144,7 +144,7 @@
         </div>
     </div>
 
-    <script src="welcomeText.js"></script>
+    <script src="../Assets/Scripts/welcomeText.js"></script>
     <script>
         document.querySelectorAll('input[name="allergy_check"]').forEach((elem) => {
             elem.addEventListener('change', function() {
