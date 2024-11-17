@@ -1,6 +1,6 @@
 <?php
 
-require_once 'BD_Operation.php';
+require_once 'DB_Operation.php';
 
 Class userAuth {
     private $SQL_Operations;
@@ -20,7 +20,10 @@ Class userAuth {
             }
         } else {
             return ["success" => false, "message" => "Access denied: User not found"];
-        } 
+        }
+    }
+    public function close() {
+        $this->SQL_Operations->close();
     }
 }
 

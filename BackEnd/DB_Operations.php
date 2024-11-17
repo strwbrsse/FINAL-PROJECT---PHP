@@ -11,7 +11,7 @@ class SQL_Operations {
 
     public function authenticate($email) {
         $conn = $this->conn->getConnection();
-        $sql = "Select password from users where email = '$email'";
+        $sql = "Select password from users where email = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $stmt->bind_param('s', $email);
@@ -24,6 +24,9 @@ class SQL_Operations {
         } else {
             return null;
         }
+    }
+    public function close() {
+        $this->conn->close();
     }
 }
 

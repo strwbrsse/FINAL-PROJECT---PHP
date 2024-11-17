@@ -10,14 +10,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'host' => 'localhost',
         'username' => 'root',
         'password' => 'root',
-        'database' => 'shotsafe_db'
+        'dbname' => 'shotsafe_db'
     ];
 
     $UserAuth = new UserAuth($dbConfig);
-    $result = $UserAuth->authenticate($email, $password);
+    
+    if ($action === 'signin') {
+        $result = $UserAuth->authenticate($email, $password);
+    } else {
+        $result = ["success" => false, "message" => "Invalid action"];
+    }
 
     echo json_encode($result);
 
     $UserAuth->close();
-}
+}   
 ?>
