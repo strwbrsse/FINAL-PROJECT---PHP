@@ -1,10 +1,11 @@
 <?php 
+
 require_once 'UserAuth.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $action = $_POST['action'];
-    $email = $_POST['Email'];
-    $password = $_POST['Pass'];
+    $action = $_POST['action'] ?? null;
+    $email = $_POST['Email'] ?? null;
+    $password = $_POST['Pass'] ?? null;
 
     $dbConfig = [
         'host' => 'localhost',
@@ -17,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($action === 'signin') {
         $result = $UserAuth->authenticate($email, $password);
+    } elseif($action === 'register') { 
+    
     } else {
         $result = ["success" => false, "message" => "Invalid action"];
     }

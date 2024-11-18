@@ -1,6 +1,6 @@
 <?php
 
-require_once 'DB_Operation.php';
+require_once 'DB_Operations.php';
 
 Class userAuth {
     private $SQL_Operations;
@@ -13,7 +13,7 @@ Class userAuth {
         $hashedPass = $this->SQL_Operations->authenticate($email);
 
         if ($hashedPass !== null) {
-            if (password_verify($password, $hashedPass)) {
+            if ($password === $hashedPass) {
                 return ["success" => true, "message" => "Access granted"];
             } else {
                 return ["success" => false, "message" => "Access denied: Invalid Password"];
@@ -23,8 +23,10 @@ Class userAuth {
         }
     }
     public function close() {
+        // Close the SQL_Operations connection
         $this->SQL_Operations->close();
     }
+
 }
 
 ?>

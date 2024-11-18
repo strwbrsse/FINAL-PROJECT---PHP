@@ -22,7 +22,8 @@
             </div>
             <div class="signin-section">
                 <h2>Sign in</h2>
-                <form action="../BackEnd/SignIn_DB.php" method="post">
+                <form action="../BackEnd/Main.php" method="post">
+                    <input type="hidden" name="action" value="signin">
                     <input type="email" placeholder="Email Address" name="Email" >
                     <input type="password" placeholder="Password" name="Pass" required>
                     <button type="submit">Sign in</button>
@@ -33,8 +34,8 @@
             </div>
         </div>
     </div>
-    <script src="../Assets/Scripts/text.js"></script>
-    <script src="../Assets/Scripts/signin.js"></script>
+    <!-- <script src="../Assets/Scripts/text.js"></script>
+    <script src="../Assets/Scripts/signin.js"></script> -->
 </body>
 
 </html>

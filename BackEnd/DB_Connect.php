@@ -3,12 +3,13 @@
 class DBConn {
 
     protected $conn;
+    private $isClosed = false;
 
     public function __construct($dbConnect) {
         $this->conn = new mysqli($dbConnect['host'], $dbConnect['username'], $dbConnect['password'], $dbConnect['dbname']);
 
         if ($this->conn->connect_error) {
-            die("Connection failed: " . $this->conn->connect_error);
+            throw new Exception("Connection failed: " . $this->conn->connect_error);
         }
     }
 
@@ -17,7 +18,10 @@ class DBConn {
     }
 
     public function close() {
-        return $this->conn->close();
+        if (!$this->isClosed) { // Only close if not already closed
+            $this->conn->close();
+            $this->isClosed = true; // Mark as closed
+        }
     }
 
     public function __destruct()

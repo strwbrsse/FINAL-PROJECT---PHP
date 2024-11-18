@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         console.log('Form Data:', Object.fromEntries(formData));
 
-        fetch('SignIn_DB.php', {
+        fetch('../BackEnd/Main.php', {
             method: 'POST',
             body: formData
         })
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 swal("Error!", data.message, "error");
             }
-        })
+        })  
         .catch(error => {
             console.error('Error:', error);
             swal("Error!", "An unexpected error occurred.", "error");
