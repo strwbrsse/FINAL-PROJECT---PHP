@@ -23,7 +23,6 @@ Class userAuth {
         }
     }
     public function close() {
-        // Close the SQL_Operations connection
         $this->SQL_Operations->close();
     }
 

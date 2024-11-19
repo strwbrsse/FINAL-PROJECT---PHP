@@ -1,5 +1,0 @@
-<?php
-
-//TO BE CONTINUED...
-
-?>

@@ -3,8 +3,8 @@ const h1 = document.getElementById("text");
 let currentChar = 0;
 let currentTextIndex = 0;
 let isDeleting = false;
-let delay = 200;
-let pauseDuration = 1000;
+let delay = 100;
+let pauseDuration = 500;
 let typeTime;
 const nonBreakingSpace = "\u00A0";
 

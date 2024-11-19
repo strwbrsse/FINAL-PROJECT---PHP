@@ -28,6 +28,10 @@ class SQL_Operations {
     public function close() {
         $this->conn->close();
     }
+
+    public function register($email, $password) {
+    
+    }
 }
 
 ?>
