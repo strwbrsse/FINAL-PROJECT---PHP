@@ -2,15 +2,22 @@
 
 require_once 'DB_Operations.php';
 
-Class userAuth {
+class userAuth
+{
     private $SQL_Operations;
 
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $this->SQL_Operations = new SQL_Operations($config);
     }
 
-    public function authenticate($email, $password) {
+    public function authenticate($email, $password)
+    {
         $hashedPass = $this->SQL_Operations->authenticate($email);
+
+        if (empty($email)) {
+            return ["success" => false, "message" => "Access denied: Email is required"];
+        }
 
         if ($hashedPass !== null) {
             if ($password === $hashedPass) {
@@ -22,10 +29,8 @@ Class userAuth {
             return ["success" => false, "message" => "Access denied: User not found"];
         }
     }
-    public function close() {
+    public function close()
+    {
         $this->SQL_Operations->close();
     }
-
 }
-
-?>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 require_once 'UserAuth.php';
 
@@ -11,15 +11,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'host' => 'localhost',
         'username' => 'root',
         'password' => 'root',
-        'dbname' => 'shotsafe_db'
+        'dbname' => 'shotsafe_data'
     ];
 
     $UserAuth = new UserAuth($dbConfig);
-    
+
     if ($action === 'signin') {
         $result = $UserAuth->authenticate($email, $password);
-    } elseif($action === 'register') { 
-    
+    } elseif ($action === 'register') {
     } else {
         $result = ["success" => false, "message" => "Invalid action"];
     }
@@ -27,5 +26,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo json_encode($result);
 
     $UserAuth->close();
-}   
-?>
+}
