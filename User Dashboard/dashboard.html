@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="styles.css"> 
+    <script src="dashboard.js" defer></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Welcome to Your Dashboard</h1>
+            <button onclick="logout()">Logout</button>
+        </header>
+        
+        <section class="quick-actions">
+            <h2>Quick Actions</h2>
+            <button onclick="scheduleAppointment()">Schedule New Appointment</button>
+            <button onclick="updateInformation()">Update My Information</button>
+        </section>
+
+        <section class="vaccination-history">
+            <h2>Vaccination History</h2>
+            <div id="vaccination-history-content">
+            </div>
+        </section>
+
+        <section class="upcoming-appointments">
+            <h2>Upcoming Appointments</h2>
+            <div id="upcoming-appointments-content">
+            </div>
+        </section>
+
+        <section class="reminders">
+            <h2>Vaccination Reminders</h2>
+            <ul id="reminder-list">
+        </section>
+
+        <section class="resources">
+            <h2>Helpful Resources</h2>
+            <ul id="resources-list">
+                <li><a href="https://example.com">Vaccination Centers Near You</a></li>
+                <li><a href="https://example.com">COVID-19 Vaccination FAQ</a></li>
+            </ul>
+        </section>
+
+        <section class="feedback">
+            <h2>Feedback</h2>
+            <textarea id="feedback" placeholder="Leave your feedback here"></textarea>
+            <button onclick="submitFeedback()">Submit Feedback</button>
+        </section>
+    </div>
+</body>
+</html>

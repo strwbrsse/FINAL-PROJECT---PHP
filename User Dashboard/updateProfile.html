@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Update Profile</h1>
+        
+        <form id="profileForm" onsubmit="submitProfileUpdate(event)">
+            <label for="fname">First Name:</label>
+            <input type="text" id="fname" name="fname" required>
+
+            <label for="mname">Middle Name:</label>
+            <input type="text" id="mname" name="mname">
+
+            <label for="lname">Last Name:</label>
+            <input type="text" id="lname" name="lname" required>
+
+            <label for="birthday">Birthday:</label>
+            <input type="date" id="birthday" name="birthday" required>
+
+            <label for="mail">Email:</label>
+            <input type="email" id="mail" name="mail" required>
+
+            <label for="contact">Contact Number:</label>
+            <input type="text" id="contact" name="contact" required>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
+
+            <label for="barangay">Barangay:</label>
+            <input type="text" id="barangay" name="barangay">
+
+            <label for="sex">Gender:</label>
+            <select id="sex" name="sex" required>
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="civilstat">Civil Status:</label>
+            <select id="civilstat" name="civilstat" required>
+                <option value="">Select</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Divorced">Divorced</option>
+            </select>
+
+            <label for="employmentstat">Employment Status:</label>
+            <select id="employmentstat" name="employmentstat" required>
+                <option value="">Select</option>
+                <option value="Employed">Employed</option>
+                <option value="Unemployed">Unemployed</option>
+                <option value="Student">Student</option>
+                <option value="Retired">Retired</option>
+            </select>
+
+            <label for="employer">Employer:</label>
+            <input type="text" id="employer" name="employer">
+
+            <label for="profession">Profession:</label>
+            <input type="text" id="profession" name="profession">
+
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <p id="responseMessage"></p>
+    </div>
+
+    <script src="updateProfile.js"></script>
+</body>
+</html>
