@@ -1,11 +1,13 @@
 <?php
 
-class DBConn {
+class DBConn
+{
 
     protected $conn;
     private $isClosed = false;
 
-    public function __construct($dbConnect) {
+    public function __construct($dbConnect)
+    {
         $this->conn = new mysqli($dbConnect['host'], $dbConnect['username'], $dbConnect['password'], $dbConnect['dbname']);
 
         if ($this->conn->connect_error) {
@@ -13,11 +15,13 @@ class DBConn {
         }
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
 
-    public function close() {
+    public function close()
+    {
         if (!$this->isClosed) { // Only close if not already closed
             $this->conn->close();
             $this->isClosed = true; // Mark as closed
@@ -28,7 +32,4 @@ class DBConn {
     {
         $this->close();
     }
-
 }
-
-?>

@@ -15,9 +15,10 @@ class SQL_Operations
     {
         $conn = $this->conn->getConnection();
         $sql = "SELECT ua.password 
-                FROM User_Auth ua 
-                JOIN Personal_Info pi ON ua.user_id = pi.personal_id 
-                WHERE pi.mail = ?";
+        FROM User_Auth ua 
+        JOIN personal p ON ua.user_id = p.personal_id 
+        JOIN contact c ON p.name_id = c.name_id 
+        WHERE c.email = ?";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('s', $email);
@@ -50,64 +51,78 @@ class SQL_Operations
         }
     }
 
-    public function close()
-    {
-        $this->conn->close();
-    }
-
-    public function register_PersonalInfo(
+    public function registerUser(
         $fname,
         $mname,
         $lname,
-        $birthday,
+        $dob,
         $mail,
-        $contact,
+        $num,
         $sex,
-        $civStat,
+        $civstat,
         $nationality,
-        $empStat,
+        $empstat,
         $empl,
         $profession,
         $address,
         $barangay,
         $allergies,
-        $dieseases
+        $diseases
     ) {
         $conn = $this->conn->getConnection();
-        $sql = "INSERT INTO personal_info 
-                (fname, mname, lname, birthday,
-                mail, contact, sex, civilstat, 
-                nationality, employmentstat,
-                employer, profession, address,
-                barangay) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param(
-            'ssssssssssssss',
-            $fname,
-            $mname,
-            $lname,
-            $birthday,
-            $mail,
-            $contact,
-            $sex,
-            $civStat,
-            $nationality,
-            $empStat,
-            $empl,
-            $profession,
-            $address,
-            $barangay
-        );
-        $stmt->execute();
+        $conn->begin_transaction();
 
-        if ($stmt->execute()) {
-            $insertedID = $stmt->insert_id;
+        try {
+            $stmt = $conn->prepare("INSERT INTO user_name (fname, mname, lname) VALUES (?, ?, ?)");
+            $stmt->bind_param('sss', $fname, $mname, $lname);
+            $stmt->execute();
+            $name_id = $conn->insert_id;
             $stmt->close();
-            return $insertedID;
-        } else {
+
+            $stmt = $conn->prepare("INSERT INTO personal (name_id, sex, civilstat, birthday, nationality) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param('issss', $name_id, $sex, $civstat, $dob, $nationality);
+            $stmt->execute();
             $stmt->close();
-            throw new Exception("Execution failed" . $stmt->error);
+
+            $stmt = $conn->prepare("INSERT INTO address (name_id, address, barangay) VALUES (?, ?, ?)");
+            $stmt->bind_param('iss', $name_id, $address, $barangay);
+            $stmt->execute();
+            $stmt->close();
+
+            $stmt = $conn->prepare("INSERT INTO contact (name_id, contact, email) VALUES (?, ?, ?)");
+            $stmt->bind_param('iss', $name_id, $num, $mail);
+            $stmt->execute();
+            $stmt->close();
+
+            $stmt = $conn->prepare("INSERT INTO employment (name_id, employment_stat, employer, profession) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param('isss', $name_id, $empstat, $empl, $profession);
+            $stmt->execute();
+            $stmt->close();
+
+            $stmt = $conn->prepare("INSERT INTO health (name_id, allergies, diseases) VALUES (?, ?, ?)");
+            $stmt->bind_param('iss', $name_id, $allergies, $diseases);
+            $stmt->execute();
+            $stmt->close();
+
+            $conn->commit();
+        } catch (Exception $e) {
+            $conn->rollback();
+            throw $e;
         }
+    }
+
+    public function signUp($username, $password)
+    {
+        $conn = $this->conn->getConnection();
+        $stmt = $conn->prepare("INSERT INTO user_auth (name_id, username, password) VALUES (?, ?, ?)");
+        $hashedPass = password_hash($password, PASSWORD_DEFAULT);
+        $stmt->bind_param('iss', $name_id, $username, $hashedPass);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public function close()
+    {
+        $this->conn->close();
     }
 }

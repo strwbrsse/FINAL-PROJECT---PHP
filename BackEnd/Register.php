@@ -1,12 +1,10 @@
 <?php
 
 require_once 'DB_Operations.php';
-require_once 'Filters.php';
 
-class UserReg
+class Register
 {
     private $SQL_Operations;
-    private $filters;
 
     public function __construct($config)
     {
@@ -17,28 +15,20 @@ class UserReg
         $fname,
         $mname,
         $lname,
-        $birthday,
+        $dob,
         $mail,
-        $contact,
+        $num,
         $sex,
-        $civStat,
+        $civstat,
         $nationality,
-        $empStat,
+        $empstat,
         $empl,
         $profession,
         $address,
-        $barangay
+        $barangay,
+        $allergies,
+        $diseases
     ) {
-        if ($this->SQL_Operations->check_ExistingUser($mail)) {
-            return ["success" => false, "message" => "Registration denied: Email already exists."];
-        }
 
-        if (!$this->filters->isValidEmail($mail)) {
-            return ["success" => false, "message" => "Registration denied: Invalid email."];
-        }
-
-        $this->filters->isValidPassword($fname, $mname, $lname);
-
-        $this->filters->isValidContact($contact);
     }
 }

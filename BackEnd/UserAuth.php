@@ -34,3 +34,4 @@ class userAuth
         $this->SQL_Operations->close();
     }
 }
+?>
