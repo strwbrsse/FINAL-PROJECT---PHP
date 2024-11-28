@@ -6,6 +6,7 @@
     <title>User Dashboard</title>
     <link rel="stylesheet" href="styles.css"> 
     <script src="dashboard.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.all.min.js"></script>
     <style>
         html {
             scroll-behavior: smooth;
@@ -55,9 +56,69 @@
 
         <section class="feedback">
             <h2>Feedback</h2>
-            <textarea id="feedback" placeholder="Leave your feedback here"></textarea>
-            <button onclick="submitFeedback()">Submit Feedback</button>
+            <form id="feedbackForm">
+                <textarea id="feedbackText" placeholder="Leave your feedback here"></textarea>
+                <button type="submit">Submit Feedback</button>
+            </form>
         </section>
     </div>
+
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+        
+            const feedback = document.getElementById('feedbackText').value;
+        
+            if (feedback.trim() !== "") { // Check if feedback is not empty
+                // Send feedback via AJAX
+                fetch('Feedback.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ feedback: feedback })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Check if the response indicates success
+                    if (data.success) {
+                        // Show SweetAlert on success
+                        Swal.fire({
+                            title: 'Thank you for your feedback!',
+                            text: 'We appreciate your input and will use it to improve our services.',
+                            icon: 'success',
+                            confirmButtonText: 'Close'
+                        });
+                    } else {
+                        // Show SweetAlert on failure
+                        Swal.fire({
+                            title: 'Oops!',
+                            text: 'There was an issue submitting your feedback. Please try again later.',
+                            icon: 'error',
+                            confirmButtonText: 'Close'
+                        });
+                    }
+                })
+                .catch(error => {
+                    // Show SweetAlert for network error or unexpected issue
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again later.',
+                        icon: 'error',
+                        confirmButtonText: 'Close'
+                    });
+                });
+            } else {
+                // Show SweetAlert for empty feedback
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Please enter some feedback before submitting.',
+                    icon: 'warning',
+                    confirmButtonText: 'Close'
+                });
+            }
+        });
+        </script>
+        
 </body>
 </html>
