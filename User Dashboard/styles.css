@@ -1,53 +1,60 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-}
+/* styles.css */
 
-.dashboard-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
+body {
+    background-color: white;
+    color: black;
+    font-family: Arial, sans-serif;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #4CAF50;
+    background-color: black;
     color: white;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-section {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: white;
-}
-
-section h2 {
-    color: #4CAF50;
+    padding: 20px;
+    text-align: center;
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: black;
     color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid black;
+    padding: 10px 20px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: white;
+    color: black;
+}
+
+.dashboard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section {
+    border: 1px solid black;
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+h1, h2 {
+    border-bottom: 1px solid black;
+    padding-bottom: 5px;
 }
 
 textarea {
     width: 100%;
     height: 100px;
-    margin-top: 10px;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
