@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 swal("Success!", data.message, "success").then(() => {
-                    window.location.href = "dashboard.html";
+                    window.location.href = "../FrontEnd/dashboard.html";
                 });
             } else {
                 swal("Error!", data.message, "error");

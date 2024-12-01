@@ -20,7 +20,7 @@ class userAuth
         }
 
         if ($hashedPass !== null) {
-            if ($password === $hashedPass) {
+            if (password_verify($password, $hashedPass)) {
                 return ["success" => true, "message" => "Access granted"];
             } else {
                 return ["success" => false, "message" => "Access denied: Invalid Password"];
@@ -34,4 +34,3 @@ class userAuth
         $this->SQL_Operations->close();
     }
 }
-?>

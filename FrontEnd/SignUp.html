@@ -22,10 +22,14 @@
             </div>
             <div class="signin-section">
                 <h2>Sign up</h2>
-                <form action="../BackEnd/signUp.php" method="post">
+                <form action="../BackEnd/Main.php" method="post">
+                    <input type="hidden" name="action" value="signup">
                     <input type="text" placeholder="Username" name="Name" required>
+                    <div id="username-error" class="error-message"></div>
                     <input type="password" placeholder="Password" name="Pass" required>
+                    <div id="password-error" class="error-message"></div>
                     <input type="password" placeholder="Confirm Password" name="ConPass" required>
+                    <div id="confirmPassword-error" class="error-message"></div>
                     <button type="submit">Sign in</button>
                 </form>
                 <div class="signup-link">
@@ -35,6 +39,7 @@
         </div>
     </div>
     <script src="../Assets/Scripts/text.js"></script>
+    <script src="../Assets/Scripts/register.js"></script>
 </body>
 
 </html>

@@ -1,10 +1,21 @@
-const decorText = ["WELCOME", "BONJOUR", "CIAO", "こんにちは", "안녕하세요", "สวัสดี"];
+const decorText = [
+    "WELCOME TO SAFESHOT",
+    "YOUR HEALTH MATTERS",
+    "VACCINATION MADE SIMPLE",
+    "STAY PROTECTED",
+    "HEALTHCARE MADE EASY",
+    "YOUR WELLNESS PARTNER",
+    "SCHEDULE YOUR VACCINE",
+    "PREVENTION IS KEY",
+    "YOUR HEALTH, OUR PRIORITY",
+    "STAY HEALTHY WITH SAFESHOT"
+];
 const h1 = document.getElementById("text");
 let currentChar = 0;
 let currentTextIndex = 0;
 let isDeleting = false;
 let delay = 100;
-let pauseDuration = 500;
+let pauseDuration = 1000;
 let typeTime;
 const nonBreakingSpace = "\u00A0";
 

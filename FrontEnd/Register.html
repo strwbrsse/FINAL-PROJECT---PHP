@@ -27,86 +27,99 @@
                         <input type="hidden" name="action" value="register">
                         <div class="form-group">
                             <label for="fname">First Name:</label>
-                            <input type="text" id="fname" name="fname" placeholder="Enter your first name" required>
+                            <input type="text" id="fname" name="fname" placeholder="Enter your first name" /*required*/>
+                            <div id="fname-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="mname">Middle Name:</label>
                             <input type="text" id="mname" name="mname" placeholder="Enter N/A if not applicable">
+                            <div id="mname-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="lname">Last Name:</label>
-                            <input type="text" id="lname" name="lname" placeholder="Enter your last name" required>
+                            <input type="text" id="lname" name="lname" placeholder="Enter your last name" /*required*/>
+                            <div id="lname-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="birthday">Birthday:</label>
-                            <input type="date" id="birthday" name="birthday" required>
+                            <input type="date" id="birthday" name="birthday" /*required*/>
+                            <div id="birthday-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="email">Email:</label>
-                            <input type="email" id="email" name="mail" placeholder="Enter your email" required>
+                            <input type="email" id="email" name="mail" placeholder="Enter your email" /*required*/>
+                            <div id="email-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="contact">Contact Number:</label>
-                            <input type="text" id="contact" name="contact" placeholder="Enter your contact number"
-                                required>
+                            <input type="text" id="contact" name="contact" placeholder="Enter your contact number" /*required*/>
+                            <div id="contact-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="sex">Sex:</label>
-                            <select id="sex" name="sex" required>
+                            <select id="sex" name="sex" /*required*/>
                                 <option value="">Select</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                             </select>
+                            <div id="sex-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="civilstat">Civil Status:</label>
-                            <select id="civilstat" name="civilstat" required>
+                            <select id="civilstat" name="civilstat" /*required*/>
                                 <option value="">Select</option>
                                 <option value="Single">Single</option>
                                 <option value="Married">Married</option>
                                 <option value="Widowed">Widowed</option>
                                 <option value="Divorced">Divorced</option>
                             </select>
+                            <div id="civilstat-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="nationality">Nationality:</label>
                             <input type="text" id="nationality" name="nationality" placeholder="Enter your nationality">
+                            <div id="nationality-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="employmentstat">Employment Status:</label>
-                            <select id="employmentstat" name="employmentstat" required>
+                            <select id="employmentstat" name="employmentstat" /*required*/>
                                 <option value="">Select</option>
                                 <option value="Employed">Employed</option>
                                 <option value="Unemployed">Unemployed</option>
                                 <option value="Student">Student</option>
                                 <option value="Retired">Retired</option>
                             </select>
+                            <div id="employmentstat-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="employer">Employer:</label>
                             <input type="text" id="employer" name="employer" placeholder="Enter N/A if not available">
+                            <div id="employer-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="profession">Profession:</label>
                             <input type="text" id="profession" name="profession"
                                 placeholder="Enter N/A if not available">
+                            <div id="profession-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="address">Address:</label>
-                            <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                            <input type="text" id="address" name="address" placeholder="Enter your address" /*required*/>
+                            <div id="address-error" class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="barangay">Barangay:</label>
                             <input type="text" id="barangay" name="barangay" placeholder="Enter your barangay">
+                            <div id="barangay-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -122,6 +135,7 @@
                                 <span class="instruction">(If yes, list all known allergies separated by a comma)</span>
                             </div>
                             <textarea id="allergy" name="allergy_description" disabled></textarea>
+                            <div id="allergy-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -137,6 +151,7 @@
                                 <span class="instruction">(If yes, list all known diseases separated by a comma)</span>
                             </div>
                             <textarea id="disease" name="disease_description" disabled></textarea>
+                            <div id="disease-error" class="error-message"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -147,27 +162,9 @@
         </div>
     </div>
 
-    <!-- <script src="../Assets/Scripts/welcomeText.js"></script>
-    <script src="../Assets/Scripts/alert.js"></script> -->
-    <script>
-        document.querySelectorAll('input[name="allergy_check"]').forEach((elem) => {
-            elem.addEventListener('change', function () {
-                document.getElementById('allergy').disabled = this.value === 'no';
-                if (this.value === 'no') {
-                    document.getElementById('allergy').value = '';
-                }
-            });
-        });
-
-        document.querySelectorAll('input[name="disease_check"]').forEach((elem) => {
-            elem.addEventListener('change', function () {
-                document.getElementById('disease').disabled = this.value === 'no';
-                if (this.value === 'no') {
-                    document.getElementById('disease').value = '';
-                }
-            });
-        });
-    </script>
+    <script src="../Assets/Scripts/welcomeText.js"></script>
+    <script src="../Assets/Scripts/register.js"></script>
+    <script src="../Assets/Scripts/inputChecker.js"></script>
 </body>
 
 </html>
