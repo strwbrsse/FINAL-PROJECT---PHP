@@ -1,13 +1,20 @@
 <?php
 class filters
 {
-    const minName = 2;
-    const maxName = 50;
-    const gen_rgx = '/^[a-zA-ZÀ-ÿ\s\'-\.,&()\/]+$/';
-    const whiteSpc_rgx = '/^\s+$/';
+    // Validation constants for name fields
+    private const minName = 2;
+    private const maxName = 50;
+    // Regex for general text validation (letters, accented chars, spaces, basic punctuation)
+    private const gen_rgx = '/^[a-zA-ZÀ-ÿ\s\'-\.,&()\/]+$/';
+    // Arrays to track current validation errors and accumulated errors
     private $errors = [];
     private $collectedErrors = [];
+    // Password requirements: 8-30 chars, uppercase, lowercase, number, special char
+    private const PASSWORD_PATTERN = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,30}$/';
+    // Username requirements: start with letter, alphanumeric with underscore/hyphen, 2-50 chars
+    private const USERNAME_PATTERN = '/^[a-zA-Z][a-zA-Z0-9_-]{1,49}$/';
 
+    // Merges current validation errors into collected errors array
     private function addToCollectedErrors()
     {
         if (!empty($this->errors)) {
@@ -15,15 +22,16 @@ class filters
         }
     }
 
+    // DEBUG: Validates first, middle, and last name fields
     public function isValidName($fname, $mname, $lname)
     {
-        $this->errors = [];  // Clear current errors
+        $this->errors = [];  // Reset error array for new validation
 
-        // First check if fields are empty or only whitespace
+        // DEBUG: First name validation
         if (trim($fname) === '') {
             $this->errors[] = ["field" => "fname", "message" => "First name is required"];
         } else {
-            // Only check length and pattern if not empty
+            // DEBUG: Check fname length and pattern after trimming
             if (strlen($fname) > self::maxName) {
                 $this->errors[] = ["field" => "fname", "message" => "First name is too long."];
             } elseif (strlen($fname) < self::minName) {
@@ -34,6 +42,7 @@ class filters
             }
         }
 
+        // DEBUG: Middle name validation (no minimum length requirement)
         if (trim($mname) === '') {
             $this->errors[] = ["field" => "mname", "message" => "Middle name is required"];
         } else {
@@ -45,6 +54,7 @@ class filters
             }
         }
 
+        // DEBUG: Last name validation
         if (trim($lname) === '') {
             $this->errors[] = ["field" => "lname", "message" => "Last name is required"];
         } else {
@@ -62,31 +72,35 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates date of birth (must be in past)
     public function isValidDoB($dob)
     {
-        $this->errors = [];  // Clear current errors
+        $this->errors = [];
 
         if (trim($dob) === '') {
             $this->errors[] = ["field" => "birthday", "message" => "Date of birth is required"];
         } else {
+            // DEBUG: Attempt to create DateTime object from input
             $date = date_create($dob);
             if (!$date) {
                 $this->errors[] = ["field" => "birthday", "message" => "Invalid date format."];
             } else {
+                // DEBUG: Ensure date is not in future
                 $today = new DateTime();
                 if ($date > $today) {
-                    $this->errors[] = ["field" => "birthday", "message" => "Date of birth cannot be in the future."];
+                    $this->errors[] = ["field" => "birthday", "message" => "Date of birth cannot be in future."];
                 }
             }
         }
 
-        $this->addToCollectedErrors();  // Add current errors to collection
-        return empty($this->errors);    // Return boolean for flow control
+        $this->addToCollectedErrors();
+        return empty($this->errors);
     }
 
+    // DEBUG: Validates email format using PHP's built-in filter
     public function isValidEmail($email)
     {
-        $this->errors = [];  // Clear current errors
+        $this->errors = [];
 
         if (trim($email) === '') {
             $this->errors[] = ["field" => "email", "message" => "Email is required"];
@@ -94,24 +108,30 @@ class filters
             $this->errors[] = ["field" => "email", "message" => "Invalid email address"];
         }
 
-        $this->addToCollectedErrors();  // Add current errors to collection
-        return empty($this->errors);    // Return boolean for flow control
+        $this->addToCollectedErrors();
+        return empty($this->errors);
     }
 
+    // DEBUG: Validates contact number (11-15 digits, optional + prefix)
     public function isValidContact($contact)
     {
-        $this->errors = [];  // Clear current errors
+        $this->errors = [];
 
         if (trim($contact) === '') {
             $this->errors[] = ["field" => "contact", "message" => "Contact number is required"];
+        } elseif (strlen($contact) < 11) {
+            $this->errors[] = ["field" => "contact", "message" => "Contact number is too short"];
+        } elseif (strlen($contact) > 15) {
+            $this->errors[] = ["field" => "contact", "message" => "Contact number is too long"];
         } elseif (!preg_match('/^[\+]?[0-9]{11,15}$/', $contact)) {
             $this->errors[] = ["field" => "contact", "message" => "Invalid contact number"];
         }
 
-        $this->addToCollectedErrors();  // Add current errors to collection
-        return empty($this->errors);    // Return boolean for flow control
+        $this->addToCollectedErrors();
+        return empty($this->errors);
     }
 
+    // DEBUG: Validates sex field (must not be empty)
     public function isValidSex($sex)
     {
         $this->errors = [];
@@ -124,6 +144,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates civil status (must not be empty)
     public function isValidCivStat($civStat)
     {
         $this->errors = [];
@@ -136,6 +157,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates nationality (2-50 chars, matches general regex)
     public function isValidNationality($nationality) {
         $this->errors = [];
 
@@ -153,6 +175,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates employment status (must not be empty)
     public function isValidEmpStat($empStat) {
         $this->errors = [];
 
@@ -164,6 +187,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates employer name (2-50 chars, matches general regex)
     public function isValidEmployer($empl) {
         $this->errors = [];
 
@@ -181,6 +205,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates profession (2-100 chars, matches general regex)
     public function isValidProfession($profession) {
         $this->errors = [];
 
@@ -198,6 +223,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates address (2-150 chars, matches general regex)
     public function isValidAddress($address) {
         $this->errors = [];
 
@@ -215,6 +241,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates barangay (2-50 chars, matches general regex)
     public function isValidBarangay($barangay) {
         $this->errors = [];
 
@@ -232,10 +259,10 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates allergies (only if allergyCheck is 'yes')
     public function isValidAllergies($allergies, $allergyCheck = 'no') {
         $this->errors = [];
         
-        // Only validate if allergyCheck is 'yes'
         if ($allergyCheck === 'yes') {
             if (trim($allergies) === '') {
                 $this->errors[] = ["field" => "allergy", "message" => "Please list your allergies"];
@@ -248,6 +275,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates diseases (only if diseaseCheck is 'yes')
     public function isValidDiseases($diseases, $diseaseCheck = 'no') {
         $this->errors = [];
 
@@ -263,6 +291,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates username (2-50 chars, must start with letter, alphanumeric with _ -)
     public function isValidUsername($Name) {
         $this->errors = [];
 
@@ -272,7 +301,7 @@ class filters
             $this->errors[] = ["field" => "username", "message" => "Username is too short"];
         } elseif (strlen($Name) > 50) {
             $this->errors[] = ["field" => "username", "message" => "Username is too long"];
-        } elseif (!preg_match('/^[a-zA-Z0-9_-]{2,50}$/', $Name)) {
+        } elseif (!preg_match(self::USERNAME_PATTERN, $Name)) {
             $this->errors[] = ["field" => "username", "message" => "Invalid input in Username"];
         } elseif (!preg_match('/[a-zA-Z]/', $Name)) {
             $this->errors[] = ["field" => "username", "message" => "Username must contain at least one letter"];
@@ -282,6 +311,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Validates password and confirmation (8-30 chars, complex requirements)
     public function isValidPassword($Pass, $ConPass) {
         $this->errors = [];
 
@@ -290,12 +320,12 @@ class filters
         } elseif (strlen($Pass) < 8) {
             $this->errors[] = ["field" => "password", "message" => "Password is too short"];
         } elseif (strlen($Pass) > 30) {
-            $this->errors[] = ["field" => "password", "message" => "Password is too long"];
-        } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/', $Pass)) {
-            $this->errors[] = ["field" => "password", "message" => "Password must contain at least 8 characters, A-Z, a-z, 0-9, and @$!%*?&#"];
-        }elseif (trim($ConPass) === '') {
-            $this->errors[] = ["field" => "confirmPassword", "message" => "Confirm password is required"];
-        } elseif ($Pass !== $ConPass) { 
+            $this->errors[] = ["field" => "password", "message" => "Password cannot exceed 30 characters"];
+        } elseif (!preg_match(self::PASSWORD_PATTERN, $Pass)) {
+            $this->errors[] = ["field" => "password", "message" => "Password must include A-Z, a-z, 0-9, and @$!%*?&#"];
+        } elseif (trim($ConPass) === '') {
+            $this->errors[] = ["field" => "confirmPassword", "message" => "Please confirm your password"];
+        } elseif ($Pass !== $ConPass) {
             $this->errors[] = ["field" => "confirmPassword", "message" => "Passwords do not match"];
         }
 
@@ -303,6 +333,7 @@ class filters
         return empty($this->errors);
     }
 
+    // DEBUG: Returns all collected errors or success status
     public function getErrors()
     {
         return empty($this->collectedErrors)
@@ -310,6 +341,7 @@ class filters
             : ["success" => false, "errors" => $this->collectedErrors];
     }
 
+    // DEBUG: Resets all error arrays
     public function clearAllErrors()
     {
         $this->errors = [];

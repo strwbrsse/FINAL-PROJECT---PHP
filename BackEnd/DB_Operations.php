@@ -2,15 +2,19 @@
 
 require_once 'DB_Connect.php';
 
+// DEBUG: Main database operations class that handles all SQL queries and data management
 class SQL_Operations
 {
+    // DEBUG: Database connection instance for managing MySQL connections
     private $conn;
 
+    // DEBUG: Initializes database connection using configuration from DB_Connect.php
     public function __construct($config)
     {
         $this->conn = new DbConn($config);
     }
 
+    // DEBUG: Retrieves hashed password for login authentication
     public function authenticate($email)
     {
         $conn = $this->conn->getConnection();
@@ -35,6 +39,7 @@ class SQL_Operations
         }
     }
 
+    // DEBUG: Verifies if email is already registered in contact table
     public function check_ExistingUser($mail)
     {
         $conn = $this->conn->getConnection();
@@ -51,6 +56,7 @@ class SQL_Operations
         }
     }
 
+    // DEBUG: Searches for exact name match in user_name table
     public function check_ExistingName($fname, $mname, $lname)
     {
         $conn = $this->conn->getConnection();
@@ -67,6 +73,7 @@ class SQL_Operations
         }
     }
 
+    // DEBUG: Checks if username is already taken in user_auth table
     public function check_ExistingUsername($Name) {
         $conn = $this->conn->getConnection();
         $sql = "SELECT * FROM user_auth WHERE username = ?";
@@ -82,12 +89,12 @@ class SQL_Operations
         }
     }
 
+    // DEBUG: Formats and validates user registration data
     public function registerUser(
         $fname, $mname, $lname, $dob, $mail, $num, $sex, 
         $civstat, $nationality, $empstat, $empl, $profession, 
         $address, $barangay, $allergies, $diseases
     ) {
-        // Store the data in class properties or return as array instead of inserting
         return [
             'fname' => $fname,
             'mname' => $mname,
@@ -108,20 +115,19 @@ class SQL_Operations
         ];
     }
 
+    // DEBUG: Manages complete user registration process with transaction safety
     public function signUp($username, $password, $userData)
     {
         $conn = $this->conn->getConnection();
         $conn->begin_transaction();
 
         try {
-            // First insert into user_name table
             $stmt = $conn->prepare("INSERT INTO user_name (fname, mname, lname) VALUES (?, ?, ?)");
             $stmt->bind_param('sss', $userData['fname'], $userData['mname'], $userData['lname']);
             $stmt->execute();
             $name_id = $conn->insert_id;
             $stmt->close();
 
-            // Then insert into personal table with name_id
             $stmt = $conn->prepare("INSERT INTO personal (name_id, sex, civilstat, birthday, nationality) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param('issss', $name_id, $userData['sex'], $userData['civstat'], $userData['dob'], $userData['nationality']);
             $stmt->execute();
@@ -148,7 +154,6 @@ class SQL_Operations
             $stmt->execute();
             $stmt->close();
 
-            // Insert into user_auth table
             $stmt = $conn->prepare("INSERT INTO user_auth (user_id, username, password) VALUES (?, ?, ?)");
             $hashedPass = password_hash($password, PASSWORD_DEFAULT);
             $stmt->bind_param('iss', $personal_id, $username, $hashedPass);
@@ -163,6 +168,7 @@ class SQL_Operations
         }
     }
 
+    // DEBUG: Closes active database connection and frees resources
     public function close()
     {
         $this->conn->close();
