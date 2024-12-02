@@ -1,4 +1,4 @@
-const decorText = ["SHOTSAFE", "SAFESHOT"];
+const decorText = ["SHOTSAFE", "SAFESHOT", "SHOTSHOT", "SAFESAFE"];
 const h1 = document.getElementById("text");
 let currentChar = 0;
 let currentTextIndex = 0;
