@@ -1,0 +1,46 @@
+<div class="sidebar" id="sidebar">
+    <div class="logo">
+        <img src="../images/shotsafe-logo.png" alt="ShotSafe Logo">
+        <h2>ShotSafe</h2>
+        <button id="sidebar-toggle" class="sidebar-toggle">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+    <div class="notification-bell">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge" id="notification-count">0</span>
+    </div>
+    <nav>
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-gauge-high"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="appointments.html" class="nav-item">
+            <i class="fas fa-calendar-check"></i>
+            <span>Appointments</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+            <i class="fas fa-gear"></i>
+            <span>Settings</span>
+        </a>
+        <a href="logout.php" class="nav-item">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<div class="notification-panel" id="notification-panel">
+    <div class="notification-header">
+        <h3>Notifications</h3>
+        <button class="mark-all-read" id="mark-all-read">
+            <i class="fas fa-check-double"></i> Mark all as read
+        </button>
+    </div>
+    <div class="notification-list" id="notification-list">
+    </div>
+</div>

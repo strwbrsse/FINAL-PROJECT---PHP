@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShotSafe - Profile Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Styles/styles.css">
+    <style>
+        .profile-container {
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4CAF50;
+        }
+
+        .profile-picture-upload {
+            display: none;
+        }
+
+        .profile-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .alert-error {
+            background: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+    </style>
+</head>
+<body>
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../images/shotsafe-logo.png" alt="ShotSafe Logo">
+                <h2>ShotSafe</h2>
+            </div>
+            <nav>
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="appointments.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="logout.php" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    <div class="content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <img id="profile-picture" src="../uploads/profile_pictures/default.png" class="profile-picture" alt="Profile Picture">
+                <div>
+                    <h2 id="user-name">Loading...</h2>
+                    <input type="file" id="profile-picture-upload" class="profile-picture-upload" accept="image/*">
+                    <button class="btn btn-secondary" onclick="document.getElementById('profile-picture-upload').click()">
+                        <i class="fas fa-camera"></i> Change Picture
+                    </button>
+                </div>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <div class="profile-sections">
+                <div class="profile-card">
+                    <h3>Personal Information</h3>
+                    <form id="personal-info-form">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" name="fname" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Middle Name</label>
+                            <input type="text" name="mname">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" name="lname" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Birthday</label>
+                            <input type="date" name="birthday" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="mail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" name="contact" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sex</label>
+                            <select name="sex" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </form>
+                </div>
+
+                <div class="profile-card">
+                    <h3>Additional Information</h3>
+                    <form id="additional-info-form">
+                        <div class="form-group">
+                            <label>Civil Status</label>
+                            <select name="civilstat" required>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Divorced">Divorced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <input type="text" name="nationality">
+                        </div>
+                        <div class="form-group">
+                            <label>Employment Status</label>
+                            <select name="employmentstat" required>
+                                <option value="Employed">Employed</option>
+                                <option value="Unemployed">Unemployed</option>
+                                <option value="Student">Student</option>
+                                <option value="Retired">Retired</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Employer</label>
+                            <input type="text" name="employer">
+                        </div>
+                        <div class="form-group">
+                            <label>Profession</label>
+                            <input type="text" name="profession">
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </form>
+                </div>
+
+                <div class="profile-card">
+                    <h3>Address Information</h3>
+                    <form id="address-form">
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" name="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Barangay</label>
+                            <input type="text" name="barangay" required>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </form>
+                </div>
+
+                <div class="profile-card">
+                    <h3>Account Security</h3>
+                    <form id="password-form">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" name="current_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" name="new_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" name="confirm_password" required>
+                        </div>
+                        <button type="submit" class="btn">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+            setupFormListeners();
+            setupProfilePictureUpload();
+        });
+
+        async function loadProfile() {
+            try {
+                const response = await fetch('profile.php?action=get_profile');
+                const profile = await response.json();
+                
+                fillProfileData(profile);
+                updateProfilePicture(profile.profile_picture);
+                document.getElementById('user-name').textContent = 
+                    `${profile.fname} ${profile.mname ? profile.mname + ' ' : ''}${profile.lname}`;
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showAlert('Error loading profile data', 'error');
+            }
+        }
+
+        function fillProfileData(profile) {
+            // Fill personal info form
+            const personalForm = document.getElementById('personal-info-form');
+            personalForm.fname.value = profile.fname;
+            personalForm.mname.value = profile.mname || '';
+            personalForm.lname.value = profile.lname;
+            personalForm.birthday.value = profile.birthday;
+            personalForm.mail.value = profile.mail;
+            personalForm.contact.value = profile.contact;
+            personalForm.sex.value = profile.sex;
+
+            // Fill additional info form
+            const additionalForm = document.getElementById('additional-info-form');
+            additionalForm.civilstat.value = profile.civilstat;
+            additionalForm.nationality.value = profile.nationality || '';
+            additionalForm.employmentstat.value = profile.employmentstat;
+            additionalForm.employer.value = profile.employer || '';
+            additionalForm.profession.value = profile.profession || '';
+
+            // Fill address form
+            const addressForm = document.getElementById('address-form');
+            addressForm.address.value = profile.address;
+            addressForm.barangay.value = profile.barangay;
+        }
+
+        function setupFormListeners() {
+            // Personal Info Form
+            document.getElementById('personal-info-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                await updateProfile('update_personal_info', formData);
+            });
+
+            // Additional Info Form
+            document.getElementById('additional-info-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                await updateProfile('update_personal_info', formData);
+            });
+
+            // Address Form
+            document.getElementById('address-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                await updateProfile('update_personal_info', formData);
+            });
+
+            // Password Form
+            document.getElementById('password-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                if (this.new_password.value !== this.confirm_password.value) {
+                    showAlert('New passwords do not match', 'error');
+                    return;
+                }
+                const data = {
+                    current_password: this.current_password.value,
+                    new_password: this.new_password.value
+                };
+                await updateProfile('update_password', data);
+                this.reset();
+            });
+        }
+
+        function setupProfilePictureUpload() {
+            document.getElementById('profile-picture-upload').addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('profile_picture', file);
+
+                try {
+                    const response = await fetch('profile.php?action=upload_profile_picture', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        updateProfilePicture(result.filename);
+                        showAlert('Profile picture updated successfully', 'success');
+                    } else {
+                        showAlert(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    showAlert('Error uploading profile picture', 'error');
+                }
+            });
+        }
+
+        async function updateProfile(action, data) {
+            try {
+                const response = await fetch(`profile.php?action=${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(Object.fromEntries(data instanceof FormData ? data : Object.entries(data)))
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    if (action === 'update_personal_info') {
+                        loadProfile();
+                    }
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showAlert('Error updating profile', 'error');
+            }
+        }
+
+        function updateProfilePicture(filename) {
+            if (filename) {
+                document.getElementById('profile-picture').src = `uploads/profile_pictures/${filename}`;
+            }
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 

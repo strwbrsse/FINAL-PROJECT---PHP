@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShotSafe Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="ShotSafe Logo" class="logo">
+                <h1>ShotSafe</h1>
+            </div>
+
+            <div class="user-profile">
+                <img src="assets/default-avatar.png" alt="User Profile" class="avatar">
+                <div class="user-info">
+                    <p class="user-name">Welcome Back!</p>
+                    <p class="user-email">user@email.com</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Records</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certificates</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <nav class="top-nav">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="nav-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="help-btn">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="dashboard-content">
+                <div class="stats-grid">
+                    <div class="stat-card completed">
+                        <div class="stat-icon">
+                            <i class="fas fa-syringe"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Completed Vaccines</h3>
+                            <p class="stat-value">3/5</p>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card appointment">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Next Appointment</h3>
+                            <p class="stat-value">Mar 15, 2024</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card upcoming">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Upcoming Doses</h3>
+                            <p class="stat-value">2 Remaining</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+
+                    <section class="content-card">
+                        <div class="card-header">
+                            <h2>Vaccination Progress</h2>
+                            <button class="view-all">View Details</button>
+                        </div>
+                        <div class="vaccination-progress">
+
+                        </div>
+                    </section>
+
+                    <section class="content-card">
+                        <div class="card-header">
+                            <h2>Upcoming Appointments</h2>
+                            <button class="add-new">+ New</button>
+                        </div>
+                        <div class="appointments-list">
+                        </div>
+                    </section>
+
+                    <section class="content-card">
+                        <div class="card-header">
+                            <h2>Recent Activity</h2>
+                        </div>
+                        <div class="activity-feed">
+
+                    <section class="content-card">
+                        <div class="card-header">
+                            <h2>Quick Actions</h2>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-download"></i>
+                                Download Records
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-print"></i>
+                                Print Certificate
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-headset"></i>
+                                Get Support
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
