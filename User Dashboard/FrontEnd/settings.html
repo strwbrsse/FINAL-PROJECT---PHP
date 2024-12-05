@@ -158,33 +158,6 @@
 
             <div class="settings-grid">
                 <div class="settings-card">
-                    <h3>Notifications</h3>
-                    <form id="notification-form">
-                        <div class="form-group">
-                            <label>Email Notifications</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" name="notification_email">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>SMS Notifications</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" name="notification_sms">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>Reminder Frequency</label>
-                            <select name="reminder_frequency" required>
-                                <!-- Options loaded dynamically -->
-                            </select>
-                        </div>
-                        <button type="submit" class="btn">Save Notifications</button>
-                    </form>
-                </div>
-
-                <div class="settings-card">
                     <h3>Appearance</h3>
                     <form id="appearance-form">
                         <div class="form-group">
@@ -208,46 +181,6 @@
                         <button type="submit" class="btn">Save Appearance</button>
                     </form>
                 </div>
-
-                <div class="settings-card">
-                    <h3>Privacy</h3>
-                    <form id="privacy-form">
-                        <div class="form-group">
-                            <label>Profile Visibility</label>
-                            <select name="privacy_profile" required>
-                                <!-- Options loaded dynamically -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Records Visibility</label>
-                            <select name="privacy_records" required>
-                                <!-- Options loaded dynamically -->
-                            </select>
-                        </div>
-                        <button type="submit" class="btn">Save Privacy</button>
-                    </form>
-                </div>
-
-                <div class="settings-card">
-                    <h3>Security</h3>
-                    <form id="security-form">
-                        <div class="form-group">
-                            <label>Two-Factor Authentication</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" name="two_factor_auth">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <button type="submit" class="btn">Save Security</button>
-                    </form>
-                </div>
-
-                <div class="settings-card">
-                    <h3>Data Management</h3>
-                    <button onclick="exportUserData()" class="btn">
-                        <i class="fas fa-download"></i> Export Data
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -264,22 +197,10 @@
                 const response = await fetch('settings.php?action=get_settings');
                 const settings = await response.json();
                 
-                // Fill notification form
-                document.querySelector('[name="notification_email"]').checked = settings.notification_email == 1;
-                document.querySelector('[name="notification_sms"]').checked = settings.notification_sms == 1;
-                document.querySelector('[name="reminder_frequency"]').value = settings.reminder_frequency;
-
                 // Fill appearance form
                 document.querySelector('[name="language_preference"]').value = settings.language_preference;
                 document.querySelector('[name="theme_preference"]').value = settings.theme_preference;
                 document.querySelector('[name="time_zone"]').value = settings.time_zone;
-
-                // Fill privacy form
-                document.querySelector('[name="privacy_profile"]').value = settings.privacy_profile;
-                document.querySelector('[name="privacy_records"]').value = settings.privacy_records;
-
-                // Fill security form
-                document.querySelector('[name="two_factor_auth"]').checked = settings.two_factor_auth == 1;
             } catch (error) {
                 console.error('Error loading settings:', error);
                 showAlert('Error loading settings', 'error');
@@ -288,30 +209,38 @@
 
         async function loadOptions() {
             try {
+                // Update paths to use proper URL structure
+                const baseUrl = '../BackEnd/settings.php';  // Adjust this path based on your directory structure
+                
                 // Load languages
-                const languagesResponse = await fetch('settings.php?action=get_languages');
+                console.log('Fetching languages...');
+                const languagesResponse = await fetch(`${baseUrl}?action=get_languages`);
+                if (!languagesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${languagesResponse.status}`);
+                }
                 const languages = await languagesResponse.json();
+                console.log('Languages received:', languages);
                 fillSelect('[name="language_preference"]', languages);
 
                 // Load themes
-                const themesResponse = await fetch('settings.php?action=get_themes');
+                console.log('Fetching themes...');
+                const themesResponse = await fetch(`${baseUrl}?action=get_themes`);
+                if (!themesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${themesResponse.status}`);
+                }
                 const themes = await themesResponse.json();
+                console.log('Themes received:', themes);
                 fillSelect('[name="theme_preference"]', themes);
 
-                // Load reminder frequencies
-                const frequenciesResponse = await fetch('settings.php?action=get_reminder_frequencies');
-                const frequencies = await frequenciesResponse.json();
-                fillSelect('[name="reminder_frequency"]', frequencies);
-
-                // Load privacy options
-                const privacyResponse = await fetch('settings.php?action=get_privacy_options');
-                const privacyOptions = await privacyResponse.json();
-                fillSelect('[name="privacy_profile"]', privacyOptions);
-                fillSelect('[name="privacy_records"]', privacyOptions);
-
                 // Load time zones
-                const timezonesResponse = await fetch('settings.php?action=get_timezones');
+                console.log('Fetching timezones...');
+                const timezonesResponse = await fetch(`${baseUrl}?action=get_timezones`);
+                if (!timezonesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${timezonesResponse.status}`);
+                }
                 const timezones = await timezonesResponse.json();
+                console.log('Timezones received:', timezones);
+                
                 const timezoneSelect = document.querySelector('[name="time_zone"]');
                 timezones.forEach(timezone => {
                     const option = document.createElement('option');
@@ -320,13 +249,14 @@
                     timezoneSelect.appendChild(option);
                 });
             } catch (error) {
-                console.error('Error loading options:', error);
-                showAlert('Error loading options', 'error');
+                console.error('Detailed error:', error);
+                showAlert(`Error loading options: ${error.message}`, 'error');
             }
         }
 
         function fillSelect(selector, options) {
             const select = document.querySelector(selector);
+            console.log('Filling select:', selector, 'with options:', options);
             select.innerHTML = '';
             Object.entries(options).forEach(([value, label]) => {
                 const option = document.createElement('option');
@@ -337,17 +267,6 @@
         }
 
         function setupFormListeners() {
-            // Notification form
-            document.getElementById('notification-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const data = {
-                    notification_email: this.notification_email.checked,
-                    notification_sms: this.notification_sms.checked,
-                    reminder_frequency: this.reminder_frequency.value
-                };
-                await updateSettings('update_notifications', data);
-            });
-
             // Appearance form
             document.getElementById('appearance-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -357,25 +276,6 @@
                     time_zone: this.time_zone.value
                 };
                 await updateSettings('update_appearance', data);
-            });
-
-            // Privacy form
-            document.getElementById('privacy-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const data = {
-                    privacy_profile: this.privacy_profile.value,
-                    privacy_records: this.privacy_records.value
-                };
-                await updateSettings('update_privacy', data);
-            });
-
-            // Security form
-            document.getElementById('security-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const data = {
-                    two_factor_auth: this.two_factor_auth.checked
-                };
-                await updateSettings('update_security', data);
             });
         }
 
@@ -398,23 +298,6 @@
             } catch (error) {
                 console.error('Error updating settings:', error);
                 showAlert('Error updating settings', 'error');
-            }
-        }
-
-        async function exportUserData() {
-            try {
-                const response = await fetch('settings.php?action=export_data');
-                const result = await response.json();
-                
-                if (result.success) {
-                    window.location.href = `settings.php?download=${result.filename}`;
-                    showAlert('Data exported successfully', 'success');
-                } else {
-                    showAlert(result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error exporting data:', error);
-                showAlert('Error exporting data', 'error');
             }
         }
 
