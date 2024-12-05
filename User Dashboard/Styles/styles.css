@@ -138,26 +138,27 @@ body {
 }
 
 .nav-item {
-    position: relative;
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    color: var(--text-secondary);
+    padding: 12px 20px;
+    color: #fff;
     text-decoration: none;
-    gap: 10px;
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
+    transition: background-color 0.3s;
 }
 
 .nav-item:hover {
-    background-color: var(--hover-color);
-    border-left-color: var(--accent-color);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item.active {
-    background-color: var(--hover-color);
-    border-left-color: var(--accent-color);
-    font-weight: var(--font-semibold);
+    background-color: #1a73e8;  /* or your preferred highlight color */
+    border-left: 4px solid #fff;
+}
+
+.nav-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
 }
 
 .nav-item.active::after {
@@ -864,4 +865,99 @@ a:hover {
 @keyframes slideIn {
     from { transform: translate(-50%, -60%); opacity: 0; }
     to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+.profile-container {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn.primary {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.btn.secondary {
+    background-color: #f1f3f4;
+    color: #3c4043;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.about-container {
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px;
+}
+
+.about-container h1 {
+    color: #1a73e8;
+    margin-bottom: 20px;
+}
+
+.about-container h2 {
+    color: #202124;
+    margin-bottom: 15px;
+}
+
+.about-container h3 {
+    color: #1a73e8;
+    margin: 25px 0 15px 0;
+}
+
+.about-container p {
+    line-height: 1.6;
+    color: #5f6368;
+    margin-bottom: 15px;
+}
+
+.about-container ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    color: #5f6368;
+}
+
+.about-container ul li {
+    margin: 10px 0;
+    line-height: 1.4;
 }

@@ -114,20 +114,28 @@ class AppointmentManager {
     }
 
     public function getAvailableVaccines() {
-        // Get list of vaccines from schedule that user hasn't completed
-        $stmt = $this->db->prepare("
-            SELECT 
-                vs.vaccine_name,
-                vs.total_doses,
-                COUNT(v.vaccine_id) as doses_received
-            FROM vaccine_schedule vs
-            LEFT JOIN Vaccine v ON v.vaccine_name = vs.vaccine_name 
-                AND v.user_id = :user_id
-            GROUP BY vs.vaccine_name, vs.total_doses
-            HAVING doses_received < vs.total_doses OR doses_received IS NULL
-        ");
-        $stmt->execute(['user_id' => $_SESSION['user_id']]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->db->prepare("
+                SELECT 
+                    vs.vaccine_name
+                FROM vaccine_schedule vs
+                LEFT JOIN Vaccine v ON v.vaccine_name = vs.vaccine_name 
+                    AND v.user_id = :user_id
+                GROUP BY vs.vaccine_name, vs.total_doses
+                HAVING COUNT(v.vaccine_id) < vs.total_doses OR COUNT(v.vaccine_id) IS NULL
+            ");
+            
+            $stmt->execute(['user_id' => $_SESSION['user_id']]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Debug log
+            error_log('Available vaccines: ' . print_r($results, true));
+            
+            return $results;
+        } catch (Exception $e) {
+            error_log('Error getting available vaccines: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function getVaccinationLocations() {

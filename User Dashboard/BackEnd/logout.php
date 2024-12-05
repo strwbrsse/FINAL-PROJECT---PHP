@@ -21,7 +21,7 @@ class LogoutManager {
             return [
                 'success' => true,
                 'message' => 'Logged out successfully',
-                'redirect' => 'login.html'
+                'redirect' => 'register.html'
             ];
         } catch (Exception $e) {
             return [
@@ -55,13 +55,12 @@ if (isset($_GET['action']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         echo json_encode($response);
     } else {
-        // For direct requests, always redirect
-        header('Location: login.html');
+        header('Location: register.html');
     }
     exit;
 }
 
-// If no action, redirect to login
-header('Location: login.html');
+// If no action, redirect to register
+header('Location: register.html');
 exit;
 ?> 
