@@ -1,11 +1,10 @@
-/* Base styles and theme colors */
 :root {
     --primary-color: #000000;
     --secondary-color: #ffffff;
-    --accent-color: #4a90e2;    /* Blue accent */
-    --success-color: #28a745;   /* Green for success states */
-    --warning-color: #ffc107;   /* Yellow for warnings */
-    --danger-color: #dc3545;    /* Red for errors/dangers */
+    --accent-color: #4a90e2;    
+    --success-color: #28a745;   
+    --warning-color: #ffc107;  
+    --danger-color: #dc3545;  
     --text-primary: #000000;
     --text-secondary: #ffffff;
     --text-muted: #6c757d;
@@ -15,36 +14,31 @@
     --shadow-color: rgba(0,0,0,0.15);
 }
 
-/* Typography */
+
 :root {
-    /* Font sizes */
-    --font-size-xs: 0.75rem;    /* 12px */
-    --font-size-sm: 0.875rem;   /* 14px */
-    --font-size-base: 1rem;     /* 16px */
-    --font-size-lg: 1.125rem;   /* 18px */
-    --font-size-xl: 1.25rem;    /* 20px */
-    --font-size-2xl: 1.5rem;    /* 24px */
-    --font-size-3xl: 1.875rem;  /* 30px */
+    --font-size-xs: 0.75rem;  
+    --font-size-sm: 0.875rem; 
+    --font-size-base: 1rem;     
+    --font-size-lg: 1.125rem;  
+    --font-size-xl: 1.25rem;    
+    --font-size-2xl: 1.5rem;   
+    --font-size-3xl: 1.875rem;  
     
-    /* Font weights */
     --font-light: 300;
     --font-normal: 400;
     --font-medium: 500;
     --font-semibold: 600;
     --font-bold: 700;
 
-    /* Line heights */
     --line-height-tight: 1.25;
     --line-height-normal: 1.5;
     --line-height-relaxed: 1.75;
 
-    /* Letter spacing */
     --letter-spacing-tight: -0.025em;
     --letter-spacing-normal: 0;
     --letter-spacing-wide: 0.025em;
 }
 
-/* Base elements */
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
@@ -54,7 +48,6 @@ body {
     line-height: var(--line-height-normal);
 }
 
-/* Sidebar styles */
 .sidebar {
     width: 250px;
     height: 100vh;
@@ -182,7 +175,6 @@ body {
     color: var(--accent-color);
 }
 
-/* Animation for active indicator */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -210,7 +202,6 @@ body {
     margin-left: 10px;
 }
 
-/* Content area */
 .content {
     margin-left: 250px;
     padding: 30px;
@@ -222,7 +213,6 @@ body {
     margin-left: 60px;
 }
 
-/* Cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -279,7 +269,6 @@ body {
     line-height: 1;
 }
 
-/* Progress bars */
 .progress-bar {
     background: var(--background-light);
     border-radius: 10px;
@@ -294,7 +283,6 @@ body {
     transition: width 0.5s ease;
 }
 
-/* Buttons */
 .btn {
     background: var(--accent-color);
     color: var(--text-secondary);
@@ -324,7 +312,6 @@ body {
     background: var(--danger-color);
 }
 
-/* Tables */
 table {
     width: 100%;
     border-collapse: separate;
@@ -357,7 +344,6 @@ tr:last-child td {
     border-bottom: none;
 }
 
-/* Alerts */
 .alert {
     padding: 15px;
     border-radius: 8px;
@@ -380,7 +366,6 @@ tr:last-child td {
     color: #721c24;
 }
 
-/* Forms */
 .form-group {
     margin-bottom: 20px;
 }
@@ -407,7 +392,6 @@ tr:last-child td {
     outline: none;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .sidebar {
         width: 60px;
@@ -431,7 +415,6 @@ tr:last-child td {
     }
 }
 
-/* Icon styles */
 .btn i {
     font-size: 1.1em;
 }
@@ -442,7 +425,6 @@ tr:last-child td {
     font-size: 1.2em;
 }
 
-/* Hover effects for icons */
 .nav-item:hover i {
     transform: scale(1.1);
     transition: transform 0.3s ease;
@@ -454,7 +436,6 @@ tr:last-child td {
     transition: all 0.3s ease;
 }
 
-/* Helper text */
 .text-muted {
     font-size: var(--font-size-sm);
     color: var(--text-muted);
@@ -468,7 +449,6 @@ tr:last-child td {
     font-size: var(--font-size-lg);
 }
 
-/* Status indicators */
 .status {
     font-size: var(--font-size-xs);
     font-weight: var(--font-medium);
@@ -476,7 +456,6 @@ tr:last-child td {
     letter-spacing: var(--letter-spacing-wide);
 }
 
-/* Links */
 a {
     color: var(--accent-color);
     text-decoration: none;
@@ -487,10 +466,9 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Responsive typography */
 @media (max-width: 768px) {
     :root {
-        --font-size-3xl: 1.5rem;    /* Smaller on mobile */
+        --font-size-3xl: 1.5rem;   
         --font-size-2xl: 1.25rem;
         --font-size-xl: 1.125rem;
     }
@@ -500,7 +478,6 @@ a:hover {
     }
 }
 
-/* Retry button styles */
 .btn-small {
     font-size: var(--font-size-sm);
     padding: 5px 10px;
@@ -524,7 +501,6 @@ a:hover {
     background: var(--hover-color);
 }
 
-/* Breadcrumbs styles */
 .breadcrumbs {
     font-size: var(--font-size-sm);
     margin-bottom: 20px;
@@ -546,7 +522,6 @@ a:hover {
     font-weight: var(--font-semibold);
 }
 
-/* Tooltip Styles */
 [data-tooltip] {
     position: relative;
     cursor: help;
@@ -577,7 +552,6 @@ a:hover {
     bottom: calc(100% + 5px);
 }
 
-/* Info icon style */
 .info-icon {
     display: inline-flex;
     align-items: center;
@@ -592,7 +566,6 @@ a:hover {
     cursor: help;
 }
 
-/* Loading Indicators */
 .loading-spinner {
     width: 24px;
     height: 24px;
@@ -634,7 +607,6 @@ a:hover {
 .loading-pulse:nth-child(2) { animation-delay: 0.2s; }
 .loading-pulse:nth-child(3) { animation-delay: 0.4s; }
 
-/* Loading Animations */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -648,8 +620,6 @@ a:hover {
     0%, 80%, 100% { transform: scale(0); }
     40% { transform: scale(1); }
 }
-
-/* Loading text style */
 .loading-text {
     color: var(--text-muted);
     font-size: var(--font-size-sm);
@@ -657,7 +627,6 @@ a:hover {
     margin: 5px 0;
 }
 
-/* Loading overlay for cards/sections */
 .loading-overlay {
     position: absolute;
     top: 0;
@@ -672,7 +641,6 @@ a:hover {
     z-index: 100;
 }
 
-/* Notification Styles */
 .notification-bell {
     position: absolute;
     top: 20px;
@@ -780,7 +748,6 @@ a:hover {
     color: var(--text-muted);
 }
 
-/* Animation for new notifications */
 @keyframes notification-pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.2); }
@@ -791,7 +758,6 @@ a:hover {
     animation: notification-pulse 1s ease;
 }
 
-/* Feedback System Styles */
 .feedback-trigger {
     position: fixed;
     bottom: 20px;
@@ -890,7 +856,6 @@ a:hover {
     text-align: right;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
