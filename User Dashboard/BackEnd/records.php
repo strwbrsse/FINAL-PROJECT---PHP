@@ -94,7 +94,11 @@ class RecordsManager {
                 vs.maximum_age
         ");
         $stmt->execute(['user_id' => $_SESSION['user_id']]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        error_log('Vaccination Schedule Results: ' . print_r($results, true));
+        
+        return $results;
     }
 
     public function addVaccinationRecord($data) {
