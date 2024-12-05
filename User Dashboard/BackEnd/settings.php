@@ -1,8 +1,25 @@
 <?php
 session_start();
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json');
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Database connection
 $db = new PDO('mysql:host=localhost;dbname=shotsafe_data', 'username', 'password');
+
+
+if (!$db) {
+    error_log('Database connection failed');
+    die('Could not connect to database');
+}
+
+// Debug session
+error_log('Session user_id: ' . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'not set'));
 
 class SettingsManager {
     private $db;
@@ -12,22 +29,43 @@ class SettingsManager {
     }
 
     public function getUserSettings() {
-        $stmt = $this->db->prepare("
-            SELECT 
-                notification_email,
-                notification_sms,
-                language_preference,
-                theme_preference,
-                reminder_frequency,
-                time_zone,
-                privacy_profile,
-                privacy_records,
-                two_factor_auth
-            FROM User_Settings
-            WHERE user_id = :user_id
-        ");
-        $stmt->execute(['user_id' => $_SESSION['user_id']]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->db->prepare("
+                SELECT 
+                    notification_email,
+                    notification_sms,
+                    language_preference,
+                    theme_preference,
+                    reminder_frequency,
+                    time_zone,
+                    privacy_profile,
+                    privacy_records,
+                    two_factor_auth
+                FROM User_Settings
+                WHERE user_id = :user_id
+            ");
+            $stmt->execute(['user_id' => $_SESSION['user_id']]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$result) {
+                return [
+                    'notification_email' => 1,
+                    'notification_sms' => 0,
+                    'language_preference' => 'en',
+                    'theme_preference' => 'light',
+                    'reminder_frequency' => 'weekly',
+                    'time_zone' => 'UTC',
+                    'privacy_profile' => 'private',
+                    'privacy_records' => 'private',
+                    'two_factor_auth' => 0
+                ];
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log('Settings Error: ' . $e->getMessage());
+            return ['error' => 'Failed to load settings: ' . $e->getMessage()];
+        }
     }
 
     public function updateNotificationSettings($data) {
@@ -147,22 +185,34 @@ class SettingsManager {
     }
 
     public function getAvailableLanguages() {
-        // Return supported languages
-        return [
-            'en' => 'English',
-            'es' => 'Español',
-            'fr' => 'Français',
-            'tl' => 'Tagalog'
-        ];
+        try {
+            error_log('Getting available languages');
+            
+            $languages = [
+                'en' => 'English',
+                'es' => 'Español',
+                'fr' => 'Français',
+                'tl' => 'Tagalog'
+            ];
+            
+            error_log('Available languages: ' . print_r($languages, true));
+            return $languages;
+        } catch (Exception $e) {
+            error_log('Error getting languages: ' . $e->getMessage());
+            return ['en' => 'English']; // Fallback to just English if there's an error
+        }
     }
 
     public function getAvailableThemes() {
+        error_log('Getting available themes');
         // Return available themes
-        return [
+        $themes = [
             'light' => 'Light Mode',
             'dark' => 'Dark Mode',
             'system' => 'System Default'
         ];
+        error_log('Available themes: ' . print_r($themes, true));
+        return $themes;
     }
 
     public function getReminderFrequencies() {
@@ -185,8 +235,11 @@ class SettingsManager {
     }
 
     public function getTimeZones() {
+        error_log('Getting timezones');
         // Return list of time zones
-        return DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+        $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+        error_log('Number of timezones: ' . count($timezones));
+        return $timezones;
     }
 
     public function exportUserData() {
