@@ -175,20 +175,48 @@
             <h3>Schedule New Appointment</h3>
             <form id="appointment-form">
                 <div class="form-group">
-                    <label>Vaccine Type</label>
-                    <select name="vaccine_type" required></select>
+                    <label for="vaccine_type">Vaccine Type*</label>
+                    <select name="vaccine_type" id="vaccine_type" required>
+                        <option value="">Select a vaccine</option>
+                        <option value="Tetanus">Tetanus</option>
+                        <option value="Influenza">Influenza (Flu Shot)</option>
+                        <option value="Pfizer">Pfizer COVID-19</option>
+                        <option value="Moderna">Moderna COVID-19</option>
+                        <option value="Johnson & Johnson">Johnson & Johnson COVID-19</option>
+                        <option value="Dengue">Dengue</option>
+                    </select>
+                    <div id="vaccine-description" class="description-text"></div>
                 </div>
                 <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" name="appointment_date" required>
+                    <label for="appointment_date">Date*</label>
+                    <input type="date" 
+                           id="appointment_date" 
+                           name="appointment_date" 
+                           min="<?php echo date('Y-m-d'); ?>" 
+                           required>
                 </div>
                 <div class="form-group">
-                    <label>Time</label>
-                    <input type="time" name="appointment_time" required>
+                    <label for="appointment_time">Time*</label>
+                    <select name="appointment_time" id="appointment_time" required>
+                        <option value="">Select a time</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="09:30">9:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                    </select>
                 </div>
-                <div class="form-group">
+                <div class="form-actions">
                     <button type="submit" class="btn-new">Schedule Appointment</button>
-                    <button type="button" onclick="closeModal()" style="margin-left: 10px;">Cancel</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
                 </div>
             </form>
         </div>
@@ -237,19 +265,36 @@
         async function loadAvailableVaccines() {
             try {
                 const response = await fetch('appointments.php?action=get_available_vaccines');
-                const vaccines = await response.json();
+                const data = await response.json();
                 
                 const select = document.querySelector('select[name="vaccine_type"]');
-                vaccines.forEach(vaccine => {
-                    const option = document.createElement('option');
-                    option.value = vaccine.vaccine_name;
-                    option.textContent = `${vaccine.vaccine_name} (Dose ${vaccine.doses_received + 1}/${vaccine.total_doses})`;
-                    select.appendChild(option);
-                });
+                select.innerHTML = '<option value="">Select a vaccine</option>';
+                
+                if (data.success && data.data) {
+                    data.data.forEach(vaccine => {
+                        const option = document.createElement('option');
+                        option.value = vaccine.vaccine_name;
+                        option.textContent = `${vaccine.vaccine_name} (Dose ${vaccine.doses_received + 1}/${vaccine.total_doses})`;
+                        
+                        option.setAttribute('data-description', vaccine.description);
+                        
+                        select.appendChild(option);
+                    });
+                }
             } catch (error) {
                 console.error('Error loading vaccines:', error);
+                showError('Failed to load available vaccines');
             }
         }
+
+        document.querySelector('select[name="vaccine_type"]').addEventListener('change', function() {
+            const description = this.options[this.selectedIndex].getAttribute('data-description');
+            const descriptionElement = document.getElementById('vaccine-description');
+            
+            if (descriptionElement) {
+                descriptionElement.textContent = description || '';
+            }
+        });
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -272,8 +317,12 @@
         document.getElementById('appointment-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+            const formData = {
+                vaccine_type: document.querySelector('select[name="vaccine_type"]').value,
+                appointment_date: document.querySelector('input[name="appointment_date"]').value,
+                appointment_time: document.querySelector('select[name="appointment_time"]').value,
+                csrf_token: '<?php echo $_SESSION["csrf_token"]; ?>'
+            };
             
             try {
                 const response = await fetch('appointments.php?action=create', {
@@ -281,19 +330,21 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(formData)
                 });
                 
                 const result = await response.json();
+                
                 if (result.success) {
                     closeModal();
                     loadAppointments('upcoming');
+                    alert('Appointment scheduled successfully!');
                 } else {
-                    alert(result.message);
+                    alert(result.message || 'Failed to create appointment');
                 }
             } catch (error) {
                 console.error('Error creating appointment:', error);
-                alert('Failed to create appointment');
+                alert('Failed to create appointment. Please try again.');
             }
         });
 
@@ -328,3 +379,4 @@
     </script>
 </body>
 </html>
+
