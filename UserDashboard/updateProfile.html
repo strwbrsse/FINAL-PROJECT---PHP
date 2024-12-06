@@ -87,6 +87,12 @@
             
             <label for="profession">Profession</label>
             <input type="text" id="profession" name="profession" required>
+
+            <label for="profession">Allergy Description</label>
+            <input type="text" id="allergy" name="allergy" required>
+
+            <label for="profession">Disease Description</label>
+            <input type="text" id="disease" name="disease" required>
             
             <div class="button-container" style="margin-top: 5px;">
                 <button onclick="submitFunction()" type="button" style="margin-right: 10px; background: #20638f; color: #f0f0f0;">Save</button>
@@ -125,6 +131,8 @@
                         $('#employmentstat').val(data.employment_stat);
                         $('#employer').val(data.employer);
                         $('#profession').val(data.profession);
+                        $('#allergy').val(data.allergy_description);
+                        $('#disease').val(data.disease_description);
                         
                     }
                 }
@@ -147,13 +155,15 @@
             var employmentstat = document.getElementById("employmentstat").value;
             var employer = document.getElementById("employer").value;
             var profession = document.getElementById("profession").value;
+            var allergy = document.getElementById("allergy").value;
+            var disease = document.getElementById("disease").value;
 
             $.ajax({
                 type : "POST",  //type of method
                 url  : "updateProfile.php",  //your page
                 data : { fname: fname, mname: mname, lname: lname, birthday: birthday, mail: mail, contact: contact,
                     address: address, barangay: barangay, sex: sex, civilstat: civilstat, employmentstat: employmentstat,
-                    employer: employer, profession: profession, userId: userId},// passing the values
+                    employer: employer, profession: profession, userId: userId, allergy : allergy, disease : disease },// passing the values
                 success: function(response){ 
                     response = response.trim(); 
                     if(response === "success"){
