@@ -17,7 +17,6 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-
 class AppointmentManager {
     private $db;
 
@@ -58,26 +57,95 @@ class AppointmentManager {
     }
 
     public function createAppointment($data, $userId) {
-        if (strtotime($data['appointment_date']) < strtotime('today')) {
-            throw new Exception('Appointment date must be in the future');
+        try {
+            // Validate required fields
+            if (empty($data['vaccine_type']) || empty($data['appointment_date']) || empty($data['appointment_time'])) {
+                throw new Exception('All fields are required');
+            }
+
+            // Validate appointment date
+            if (strtotime($data['appointment_date']) < strtotime('today')) {
+                throw new Exception('Appointment date must be in the future');
+            }
+
+            // Validate vaccine type
+            $validVaccines = [
+                'Tetanus',
+                'TDAP',
+                'MMR',
+                'Varicella',
+                'Polio',
+                'Rabies',
+                'Yellow Fever',
+                'Hepatitis A',
+                'Hepatitis B',
+                'Influenza',
+                'Pfizer',
+                'Moderna',
+                'Johnson & Johnson',
+                'Dengue'
+            ];
+
+            if (!in_array($data['vaccine_type'], $validVaccines)) {
+                throw new Exception('Invalid vaccine type selected');
+            }
+
+            // Begin transaction
+            $this->db->beginTransaction();
+
+            // Check if user already has pending appointment for this vaccine
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as count 
+                FROM appointments 
+                WHERE user_id = :user_id 
+                    AND vaccine_type = :vaccine_type 
+                    AND status = 'scheduled'
+                    AND appointment_date >= CURRENT_DATE
+            ");
+            $stmt->execute([
+                'user_id' => $userId,
+                'vaccine_type' => $data['vaccine_type']
+            ]);
+            $result = $stmt->fetch();
+
+            if ($result['count'] > 0) {
+                throw new Exception('You already have a pending appointment for this vaccine');
+            }
+
+            // Insert the appointment
+            $stmt = $this->db->prepare("
+                INSERT INTO appointments (
+                    user_id,
+                    vaccine_type,
+                    appointment_date,
+                    appointment_time,
+                    status,
+                    created_at
+                ) VALUES (
+                    :user_id,
+                    :vaccine_type,
+                    :appointment_date,
+                    :appointment_time,
+                    'scheduled',
+                    NOW()
+                )
+            ");
+
+            $stmt->execute([
+                'user_id' => $userId,
+                'vaccine_type' => $data['vaccine_type'],
+                'appointment_date' => $data['appointment_date'],
+                'appointment_time' => $data['appointment_time']
+            ]);
+
+            $this->db->commit();
+            return ['success' => true, 'message' => 'Appointment created successfully'];
+
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Error creating appointment: " . $e->getMessage());
+            throw new Exception('Failed to create appointment: ' . $e->getMessage());
         }
-
-        $stmt = $this->db->prepare("
-            INSERT INTO appointments (
-                user_id, appointment_date, appointment_time, vaccine_type, dose_number, status
-            ) VALUES (
-                :user_id, :appointment_date, :appointment_time, :vaccine_type, :dose_number, 'scheduled'
-            )
-        ");
-        $stmt->execute([
-            'user_id' => $userId,
-            'appointment_date' => $data['appointment_date'],
-            'appointment_time' => $data['appointment_time'],
-            'vaccine_type' => $data['vaccine_type'],
-            'dose_number' => $data['dose_number']
-        ]);
-
-        return ['success' => true, 'message' => 'Appointment created successfully'];
     }
 
     public function updateAppointmentStatus($appointmentId, $status, $userId) {
@@ -97,13 +165,43 @@ class AppointmentManager {
     public function getAvailableVaccines($userId) {
         $stmt = $this->db->prepare("
             SELECT 
-                vs.vaccine_name
+                vs.vaccine_name,
+                IFNULL(COUNT(v.vaccine_id), 0) as doses_received,
+                vs.total_doses,
+                vs.min_age,
+                vs.max_age,
+                vs.description
             FROM vaccine_schedule vs
-            LEFT JOIN Vaccine v ON v.vaccine_name = vs.vaccine_name 
+            LEFT JOIN vaccine v 
+                ON v.vaccine_name = vs.vaccine_name 
                 AND v.name_id = :user_id
-            GROUP BY vs.vaccine_name, vs.total_doses
-            HAVING COUNT(v.vaccine_id) < vs.total_doses OR COUNT(v.vaccine_id) IS NULL
+            WHERE vs.vaccine_name IN (
+                'Tetanus',
+                'TDAP',
+                'MMR',
+                'Varicella',
+                'Polio',
+                'Rabies',
+                'Yellow Fever',
+                'Hepatitis A',
+                'Hepatitis B',
+                'Influenza',
+                'Pfizer',
+                'Moderna',
+                'Johnson & Johnson',
+                'Dengue'
+            )
+            GROUP BY 
+                vs.vaccine_name, 
+                vs.total_doses, 
+                vs.min_age, 
+                vs.max_age, 
+                vs.description
+            HAVING 
+                doses_received < vs.total_doses 
+                OR doses_received IS NULL
         ");
+        
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchAll();
     }
