@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShotSafe - Appointments</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -133,7 +135,7 @@
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </a>
-            <a href="about.html" class="nav-item active">
+            <a href="about.html" class="nav-item">
                 <i class="fas fa-info-circle"></i>
                 <span>About Us</span>
             </a>
@@ -148,7 +150,7 @@
         <div class="breadcrumbs">
             <a href="dashboard.html">Home</a> &gt;
             <a href="appointments.html">Appointments</a> &gt;
-            <span>Current Appointment</span>
+            <span>Manage Appointments</span>
         </div>
         <div class="appointments-container">
             <div class="appointment-header">
@@ -196,7 +198,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadAppointments('upcoming');
             loadAvailableVaccines();
-            loadLocations();
         });
 
         async function loadAppointments(type) {
@@ -326,4 +327,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

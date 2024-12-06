@@ -32,12 +32,10 @@ class LogoutManager {
     }
 
     private function clearAuthCookies() {
-        // Clear remember-me cookie if it exists
         if (isset($_COOKIE['remember_me'])) {
             setcookie('remember_me', '', time() - 3600, '/');
         }
 
-        // Clear any other auth-related cookies
         if (isset($_COOKIE['user_token'])) {
             setcookie('user_token', '', time() - 3600, '/');
         }
