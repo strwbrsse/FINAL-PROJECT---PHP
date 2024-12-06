@@ -53,12 +53,12 @@ if (isset($_GET['action']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         echo json_encode($response);
     } else {
-        header('Location: register.html');
+        header('Location: index.html');
     }
     exit;
 }
 
-// If no action, redirect to register
-header('Location: register.html');
+// If no action, redirect to index
+header('Location: index.html');
 exit;
-?> 
+ ?>

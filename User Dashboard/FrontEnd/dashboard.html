@@ -55,9 +55,6 @@
                     </span>
                 </h3>
                 <p id="completed-vaccines" data-tooltip="Click to view detailed vaccination history">Loading...</p>
-                <div class="progress">
-                    <div id="vaccine-progress"></div>
-                </div>
             </div>
             <div class="card">
                 <h3>
@@ -81,18 +78,6 @@
             </div>
             <div class="card">
                 <h3>
-                    <i class="fas fa-chart-line"></i>
-                    Progress
-                    <span class="info-icon" data-tooltip="Your overall vaccination progress">
-                        <i class="fas fa-info"></i>
-                    </span>
-                </h3>
-                <div class="progress-bar" data-tooltip="Click for detailed progress breakdown">
-                    <div class="progress-fill" id="progress-bar"></div>
-                </div>
-            </div>
-            <div class="card">
-                <h3>
                     <i class="fas fa-calendar-plus"></i>
                     Upcoming Appointments
                 </h3>
@@ -100,6 +85,40 @@
                     <i class="fas fa-plus"></i>
                     New
                 </button>
+            </div>
+            <div class="card">
+                <h3>
+                    <i class="fas fa-list-ul"></i>
+                    Available Vaccines
+                    <span class="info-icon" data-tooltip="List of recommended vaccines">
+                        <i class="fas fa-info"></i>
+                    </span>
+                    <button class="btn-small toggle-vaccines" onclick="toggleVaccineList()">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </h3>
+                <div class="vaccine-list" id="vaccine-list">
+                    <div class="vaccine-item">
+                        <h4>Influenza (Flu Shot)</h4>
+                        <p>Annual vaccination that protects against seasonal flu strains.</p>
+                    </div>
+                    <div class="vaccine-item">
+                        <h4>COVID-19</h4>
+                        <p>Protects against coronavirus disease and its variants.</p>
+                    </div>
+                    <div class="vaccine-item">
+                        <h4>Tdap</h4>
+                        <p>Protects against tetanus, diphtheria, and pertussis (whooping cough).</p>
+                    </div>
+                    <div class="vaccine-item">
+                        <h4>MMR</h4>
+                        <p>Protects against measles, mumps, and rubella.</p>
+                    </div>
+                    <div class="vaccine-item">
+                        <h4>Hepatitis B</h4>
+                        <p>Protects against the hepatitis B virus infection.</p>
+                    </div>
+                </div>
             </div>
             <div class="card">
                 <h3>

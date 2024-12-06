@@ -20,12 +20,13 @@ try {
 
     try {
         // Database connection with error logging
-        $db = new PDO('mysql:host=localhost;dbname=shotsafe_data', 'root', '', [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
+        $db = mysqli_connect('localhost', 'root', '', 'shotsafe_data');
+        if (!$db) {
+            error_log('Database connection failed: ' . mysqli_connect_error());
+            throw new Exception('Database connection failed');
+        }
         error_log('Database connection successful');
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
         error_log('Database connection failed: ' . $e->getMessage());
         throw new Exception('Database connection failed');
     }
@@ -54,11 +55,11 @@ try {
 
         try {
             // Begin transaction
-            $db->beginTransaction();
+            mysqli_begin_transaction($db);
             error_log('Transaction started');
 
             // Create appointment
-            $stmt = $db->prepare("
+            $stmt = mysqli_prepare($db, "
                 INSERT INTO appointments (
                     user_id,
                     vaccine_type,
@@ -67,36 +68,42 @@ try {
                     status,
                     created_at
                 ) VALUES (
-                    :user_id,
-                    :vaccine_type,
-                    :appointment_date,
-                    :appointment_time,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
                     'scheduled',
                     NOW()
                 )
             ");
 
-            $params = [
+            mysqli_stmt_bind_param($stmt, 'isss', 
+                $userId,
+                $data['vaccine_type'],
+                $data['appointment_date'],
+                $data['appointment_time']
+            );
+            
+            error_log('Executing query with params: ' . print_r([
                 'user_id' => $userId,
                 'vaccine_type' => $data['vaccine_type'],
                 'appointment_date' => $data['appointment_date'],
                 'appointment_time' => $data['appointment_time']
-            ];
-            error_log('Executing query with params: ' . print_r($params, true));
+            ], true));
 
-            $stmt->execute($params);
+            mysqli_stmt_execute($stmt);
             
             // Commit transaction
-            $db->commit();
+            mysqli_commit($db);
             error_log('Transaction committed successfully');
 
             echo json_encode([
                 'success' => true,
                 'message' => 'Appointment created successfully'
             ]);
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             // Rollback transaction on error
-            $db->rollBack();
+            mysqli_rollback($db);
             error_log('Database error: ' . $e->getMessage());
             throw new Exception('Database error: ' . $e->getMessage());
         }
@@ -139,8 +146,8 @@ try {
 }
 
 function getUpcomingAppointments($userId) {
-    global $db;  // Add this to access the database connection
-    $stmt = $db->prepare("
+    global $db;
+    $stmt = mysqli_prepare($db, "
         SELECT 
             id,
             vaccine_type,
@@ -148,19 +155,21 @@ function getUpcomingAppointments($userId) {
             appointment_time,
             status
         FROM appointments 
-        WHERE user_id = :user_id 
+        WHERE user_id = ?
         AND appointment_date >= CURRENT_DATE
         AND status = 'scheduled'
         ORDER BY appointment_date ASC, appointment_time ASC
     ");
     
-    $stmt->execute(['user_id' => $userId]);
-    return $stmt->fetchAll();
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
 function getNextAppointment($userId) {
-    global $db;  // Add this to access the database connection
-    $stmt = $db->prepare("
+    global $db;
+    $stmt = mysqli_prepare($db, "
         SELECT 
             id,
             vaccine_type,
@@ -168,20 +177,22 @@ function getNextAppointment($userId) {
             appointment_time,
             status
         FROM appointments 
-        WHERE user_id = :user_id 
+        WHERE user_id = ?
         AND appointment_date >= CURRENT_DATE
         AND status = 'scheduled'
         ORDER BY appointment_date ASC, appointment_time ASC
         LIMIT 1
     ");
     
-    $stmt->execute(['user_id' => $userId]);
-    return $stmt->fetch();
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($result);
 }
 
 function getUpcomingDoses($userId) {
-    global $db;  // Add this to access the database connection
-    $stmt = $db->prepare("
+    global $db;
+    $stmt = mysqli_prepare($db, "
         SELECT 
             vs.vaccine_name,
             COUNT(v.vaccine_id) as doses_received,
@@ -191,13 +202,15 @@ function getUpcomingDoses($userId) {
                 ELSE 0 
             END as doses_remaining
         FROM vaccine_schedule vs
-        LEFT JOIN vaccine v ON v.vaccine_name = vs.vaccine_name AND v.name_id = :user_id
+        LEFT JOIN vaccine v ON v.vaccine_name = vs.vaccine_name AND v.name_id = ?
         GROUP BY vs.vaccine_name, vs.total_doses
         HAVING doses_remaining > 0
         ORDER BY vs.vaccine_name
     ");
     
-    $stmt->execute(['user_id' => $userId]);
-    return $stmt->fetchAll();
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 ?>

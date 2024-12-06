@@ -6,10 +6,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 try {
-    $db = new PDO('mysql:host=localhost;dbname=shotsafe_data', 'root', '', [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    $db = mysqli_connect('localhost', 'root', '', 'shotsafe_data');
+    if (!$db) {
+        throw new Exception('Database connection failed: ' . mysqli_connect_error());
+    }
 
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -29,7 +29,7 @@ try {
         }
 
         public function getProfile($userId) {
-            $stmt = $this->db->prepare("
+            $query = "
                 SELECT 
                     u.fname, u.mname, u.lname,
                     p.birthday, p.sex, p.civilstat, p.nationality,
@@ -41,81 +41,88 @@ try {
                 INNER JOIN address a ON u.name_id = a.name_id
                 INNER JOIN contact c ON u.name_id = c.name_id
                 LEFT JOIN employment e ON u.name_id = e.name_id
-                WHERE u.name_id = :user_id
-            ");
-            $stmt->execute(['user_id' => $userId]);
-            $result = $stmt->fetch();
+                WHERE u.name_id = ?
+            ";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $profile = $result->fetch_assoc();
 
-            if (!$result) {
+            if (!$profile) {
                 throw new Exception('Profile not found');
             }
 
-            return $result;
+            return $profile;
         }
 
         public function updateProfile($userId, $data) {
             $this->validateCSRFToken($data['csrf_token']);
 
-            $this->db->beginTransaction();
+            $this->db->begin_transaction();
 
             try {
                 // Update personal info
                 $stmt = $this->db->prepare("
                     UPDATE personal
-                    SET birthday = :birthday, sex = :sex, civilstat = :civilstat, nationality = :nationality
-                    WHERE name_id = :user_id
+                    SET birthday = ?, sex = ?, civilstat = ?, nationality = ?
+                    WHERE name_id = ?
                 ");
-                $stmt->execute([
-                    'birthday' => $data['birthday'],
-                    'sex' => $data['sex'],
-                    'civilstat' => $data['civilstat'],
-                    'nationality' => $data['nationality'],
-                    'user_id' => $userId,
-                ]);
+                $stmt->bind_param("ssssi", 
+                    $data['birthday'],
+                    $data['sex'],
+                    $data['civilstat'],
+                    $data['nationality'],
+                    $userId
+                );
+                $stmt->execute();
 
                 // Update address
                 $stmt = $this->db->prepare("
                     UPDATE address
-                    SET address = :address, barangay = :barangay
-                    WHERE name_id = :user_id
+                    SET address = ?, barangay = ?
+                    WHERE name_id = ?
                 ");
-                $stmt->execute([
-                    'address' => $data['address'],
-                    'barangay' => $data['barangay'],
-                    'user_id' => $userId,
-                ]);
+                $stmt->bind_param("ssi",
+                    $data['address'],
+                    $data['barangay'],
+                    $userId
+                );
+                $stmt->execute();
 
                 // Update contact
                 $stmt = $this->db->prepare("
                     UPDATE contact
-                    SET contact = :contact, email = :email
-                    WHERE name_id = :user_id
+                    SET contact = ?, email = ?
+                    WHERE name_id = ?
                 ");
-                $stmt->execute([
-                    'contact' => $data['contact'],
-                    'email' => $data['email'],
-                    'user_id' => $userId,
-                ]);
+                $stmt->bind_param("ssi",
+                    $data['contact'],
+                    $data['email'],
+                    $userId
+                );
+                $stmt->execute();
 
                 if (!empty($data['employment_stat'])) {
                     $stmt = $this->db->prepare("
                         UPDATE employment
-                        SET employment_stat = :employment_stat, employer = :employer, profession = :profession
-                        WHERE name_id = :user_id
+                        SET employment_stat = ?, employer = ?, profession = ?
+                        WHERE name_id = ?
                     ");
-                    $stmt->execute([
-                        'employment_stat' => $data['employment_stat'],
-                        'employer' => $data['employer'],
-                        'profession' => $data['profession'],
-                        'user_id' => $userId,
-                    ]);
+                    $stmt->bind_param("sssi",
+                        $data['employment_stat'],
+                        $data['employer'],
+                        $data['profession'],
+                        $userId
+                    );
+                    $stmt->execute();
                 }
 
                 $this->db->commit();
 
                 return ['success' => true, 'message' => 'Profile updated successfully'];
             } catch (Exception $e) {
-                $this->db->rollBack();
+                $this->db->rollback();
                 error_log('Error updating profile: ' . $e->getMessage());
                 return ['success' => false, 'message' => 'Failed to update profile'];
             }

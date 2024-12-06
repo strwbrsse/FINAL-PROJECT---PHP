@@ -212,3 +212,12 @@ searchInput.addEventListener('input', function(e) {
         }
     });
 });
+
+function toggleVaccineList() {
+    const list = document.getElementById('vaccine-list');
+    const button = document.querySelector('.toggle-vaccines');
+    const icon = button.querySelector('i');
+    
+    list.classList.toggle('hidden');
+    button.classList.toggle('collapsed');
+}
