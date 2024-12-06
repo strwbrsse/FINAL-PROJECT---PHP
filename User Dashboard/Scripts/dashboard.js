@@ -144,8 +144,60 @@ function showAlert(message, type) {
     }
 }
 
-// Initialize dashboard
-document.addEventListener('DOMContentLoaded', updateDashboardData);
+async function updateVaccinationProgress() {
+    try {
+        const response = await fetch('api/vaccination-progress.php');
+        const data = await response.json();
+        
+        // Update completed vaccines count
+        const completedVaccines = document.getElementById('completed-vaccines');
+        completedVaccines.textContent = `${data.completed}/${data.total}`;
+        
+        // Update progress bar
+        const progressBar = document.getElementById('vaccine-progress');
+        const progressPercentage = (data.completed / data.total) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        
+        // Add color coding based on progress
+        if (progressPercentage === 100) {
+            progressBar.style.background = 'var(--success-color)';
+        } else if (progressPercentage > 50) {
+            progressBar.style.background = 'var(--accent-color)';
+        } else {
+            progressBar.style.background = 'var(--warning-color)';
+        }
+
+        // Update overall progress bar
+        const overallProgressBar = document.getElementById('progress-bar');
+        overallProgressBar.style.width = `${progressPercentage}%`;
+        
+        // Add animation class for smooth transition
+        progressBar.classList.add('progress-updating');
+        setTimeout(() => progressBar.classList.remove('progress-updating'), 600);
+        
+    } catch (error) {
+        console.error('Error updating vaccination progress:', error);
+    }
+}
+
+// Function to be called after adding a new vaccination record
+function onVaccinationAdded() {
+    updateVaccinationProgress();
+    loadUpcomingDoses();
+    updateRecentActivity();
+}
+
+// Set up real-time updates
+document.addEventListener('vaccinationAdded', onVaccinationAdded);
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+    updateVaccinationProgress();
+    // ... other initialization code ...
+});
+
+// Refresh progress periodically (optional)
+setInterval(updateVaccinationProgress, 5 * 60 * 1000); // Every 5 minutes
 
 // Search functionality
 const searchInput = document.querySelector('.header input');
