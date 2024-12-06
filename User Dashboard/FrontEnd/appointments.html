@@ -234,6 +234,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadAppointments('upcoming');
             loadAvailableVaccines();
+            checkSession();
         });
 
         async function loadAppointments(type) {
@@ -328,31 +329,34 @@
             const formData = {
                 vaccine_type: document.querySelector('select[name="vaccine_type"]').value,
                 appointment_date: document.querySelector('input[name="appointment_date"]').value,
-                appointment_time: document.querySelector('select[name="appointment_time"]').value,
-                csrf_token: '<?php echo $_SESSION["csrf_token"]; ?>'
+                appointment_time: document.querySelector('select[name="appointment_time"]').value
             };
+
+            console.log('Sending appointment data:', formData); // Debug log
             
             try {
-                const response = await fetch('appointments.php?action=create', {
+                const response = await fetch('../BackEnd/appointments.php?action=create', { // Update path
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData),
+                    credentials: 'include' 
                 });
                 
                 const result = await response.json();
+                console.log('Server response:', result); // Debug log
                 
                 if (result.success) {
                     closeModal();
                     loadAppointments('upcoming');
                     alert('Appointment scheduled successfully!');
                 } else {
-                    alert(result.message || 'Failed to create appointment');
+                    alert(result.error || result.message || 'Failed to create appointment');
                 }
             } catch (error) {
                 console.error('Error creating appointment:', error);
-                alert('Failed to create appointment. Please try again.');
+                alert('Failed to create appointment. Please check the console for details.');
             }
         });
 
@@ -382,6 +386,16 @@
             } catch (error) {
                 console.error('Error cancelling appointment:', error);
                 alert('Failed to cancel appointment');
+            }
+        }
+
+        async function checkSession() {
+            try {
+                const response = await fetch('../BackEnd/check_session.php');
+                const data = await response.json();
+                console.log('Session status:', data);
+            } catch (error) {
+                console.error('Session check failed:', error);
             }
         }
     </script>
