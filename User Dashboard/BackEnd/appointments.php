@@ -53,7 +53,6 @@ class AppointmentManager {
 
     public function createAppointment($data) {
         try {
-            // Validate appointment date is in the future
             if (strtotime($data['appointment_date']) < strtotime('today')) {
                 throw new Exception('Appointment date must be in the future');
             }
@@ -65,7 +64,6 @@ class AppointmentManager {
                     appointment_time,
                     vaccine_type,
                     dose_number,
-                    location,
                     status
                 ) VALUES (
                     :user_id,
@@ -73,7 +71,6 @@ class AppointmentManager {
                     :appointment_time,
                     :vaccine_type,
                     :dose_number,
-                    :location,
                     'scheduled'
                 )
             ");
@@ -83,8 +80,7 @@ class AppointmentManager {
                 'appointment_date' => $data['appointment_date'],
                 'appointment_time' => $data['appointment_time'],
                 'vaccine_type' => $data['vaccine_type'],
-                'dose_number' => $data['dose_number'],
-                'location' => $data['location']
+                'dose_number' => $data['dose_number']
             ]);
 
             return ['success' => true, 'message' => 'Appointment created successfully'];
@@ -137,18 +133,6 @@ class AppointmentManager {
             return [];
         }
     }
-
-    public function getVaccinationLocations() {
-        // You might want to store these in a separate table
-        // For now, returning static locations
-        return [
-            'City Health Office - Main Branch',
-            'City Health Office - North Branch',
-            'City Health Office - South Branch',
-            'Mobile Vaccination Center',
-            'Central Hospital'
-        ];
-    }
 }
 
 // Handle AJAX requests
@@ -184,10 +168,6 @@ if (isset($_GET['action'])) {
 
         case 'get_available_vaccines':
             $response = $appointmentManager->getAvailableVaccines();
-            break;
-
-        case 'get_locations':
-            $response = $appointmentManager->getVaccinationLocations();
             break;
     }
 
