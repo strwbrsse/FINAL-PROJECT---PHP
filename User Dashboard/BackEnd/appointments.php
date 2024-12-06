@@ -138,8 +138,9 @@ try {
     ]);
 }
 
-public function getUpcomingAppointments($userId) {
-    $stmt = $this->db->prepare("
+function getUpcomingAppointments($userId) {
+    global $db;  // Add this to access the database connection
+    $stmt = $db->prepare("
         SELECT 
             id,
             vaccine_type,
@@ -157,8 +158,9 @@ public function getUpcomingAppointments($userId) {
     return $stmt->fetchAll();
 }
 
-public function getNextAppointment($userId) {
-    $stmt = $this->db->prepare("
+function getNextAppointment($userId) {
+    global $db;  // Add this to access the database connection
+    $stmt = $db->prepare("
         SELECT 
             id,
             vaccine_type,
@@ -177,8 +179,9 @@ public function getNextAppointment($userId) {
     return $stmt->fetch();
 }
 
-public function getUpcomingDoses($userId) {
-    $stmt = $this->db->prepare("
+function getUpcomingDoses($userId) {
+    global $db;  // Add this to access the database connection
+    $stmt = $db->prepare("
         SELECT 
             vs.vaccine_name,
             COUNT(v.vaccine_id) as doses_received,
