@@ -185,10 +185,6 @@
                     <input type="time" name="appointment_time" required>
                 </div>
                 <div class="form-group">
-                    <label>Location</label>
-                    <select name="location" required></select>
-                </div>
-                <div class="form-group">
                     <button type="submit" class="btn-new">Schedule Appointment</button>
                     <button type="button" onclick="closeModal()" style="margin-left: 10px;">Cancel</button>
                 </div>
@@ -251,23 +247,6 @@
                 });
             } catch (error) {
                 console.error('Error loading vaccines:', error);
-            }
-        }
-
-        async function loadLocations() {
-            try {
-                const response = await fetch('appointments.php?action=get_locations');
-                const locations = await response.json();
-                
-                const select = document.querySelector('select[name="location"]');
-                locations.forEach(location => {
-                    const option = document.createElement('option');
-                    option.value = location;
-                    option.textContent = location;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading locations:', error);
             }
         }
 
