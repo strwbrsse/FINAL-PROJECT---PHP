@@ -1,41 +1,46 @@
 <?php
-require_once 'DB_Connect.php';
+    include('DB_Connect.php');
 
-session_start();
-header('Content-Type: application/json');
+    session_start();
+    $response = "";
 
-$userId = $_SESSION['user_id'];
-$data = json_decode(file_get_contents("php://input"), true);
+    if ($_POST['userId'] && isset($_POST['fname']) && isset($_POST['mname']) && isset($_POST['lname']) && isset($_POST['birthday'])
+        && isset($_POST['mail']) && isset($_POST['contact']) && isset($_POST['address']) && isset($_POST['barangay'])
+        && isset($_POST['sex']) && isset($_POST['civilstat']) && isset($_POST['employmentstat']) && isset($_POST['employer'])
+        && isset($_POST['profession']) && isset($_POST['userId'])) {
 
-if ($userId && isset($data['fname'], $data['lname'], $data['birthday'], $data['mail'], $data['contact'], $data['address'], $data['sex'], $data['civilstat'], $data['employmentstat'])) {
-    $fname = $data['fname'];
-    $mname = $data['mname'] ?? null;
-    $lname = $data['lname'];
-    $birthday = $data['birthday'];
-    $mail = $data['mail'];
-    $contact = $data['contact'];
-    $address = $data['address'];
-    $barangay = $data['barangay'] ?? null;
-    $sex = $data['sex'];
-    $civilstat = $data['civilstat'];
-    $employmentstat = $data['employmentstat'];
-    $employer = $data['employer'] ?? null;
-    $profession = $data['profession'] ?? null;
+        $userId = $_POST['userId'];
+        $fname = $_POST['fname'];
+        $mname = $_POST['mname'];
+        $lname = $_POST['lname'];
+        $birthday = $_POST['birthday'];
+        $mail = $_POST['mail'];
+        $contact = $_POST['contact'];
+        $address = $_POST['address'];
+        $barangay = $_POST['barangay'];
+        $sex = $_POST['sex'];
+        $civilstat = $_POST['civilstat'];
+        $employmentstat = $_POST['employmentstat'];
+        $employer = $_POST['employer'];
+        $profession = $_POST['profession'];
 
-    $query = "UPDATE Personal_Info SET fname = ?, mname = ?, lname = ?, birthday = ?, mail = ?, contact = ?, address = ?, barangay = ?, sex = ?, civilstat = ?, employmentstat = ?, employer = ?, profession = ? WHERE personal_id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssssssssssss", $fname, $mname, $lname, $birthday, $mail, $contact, $address, $barangay, $sex, $civilstat, $employmentstat, $employer, $profession, $userId);
+        $sql = "UPDATE user_name as un join personal as p on un.name_id = p.name_id 
+            join contact as c on p.name_id = c.name_id 
+            join address as a on c.name_id = a.name_id 
+            join employment as e on a.name_id = e.name_id 
+            set un.fname = '$fname', un.mname = '$mname', un.lname = '$lname', p.birthday = '$birthday', c.email = '$mail',
+            c.contact = '$contact', a.address = '$address', a.barangay = '$barangay', p.sex = '$sex', 
+            p.civilstat = '$civilstat', e.employment_stat = '$employmentstat', e.employer = '$employer', e.profession = '$profession'
+            WHERE p.personal_id = $userId";
 
-    $response = ["success" => false];
-    if ($stmt->execute()) {
-        $response["success"] = true;
+        if(mysqli_query($conn, $sql)){
+            $response = "success";
+        }
+        else{
+            $response = $sql;
+        }
     }
-    echo json_encode($response);
 
-    $stmt->close();
-} else {
-    echo json_encode(["success" => false, "message" => "Invalid input data."]);
-}
-
-$conn->close();
+echo $response;
+mysqli_close($conn);
 ?>

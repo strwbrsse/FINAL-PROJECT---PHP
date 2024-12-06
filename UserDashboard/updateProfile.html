@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheet.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="updateProfile.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Profile Management</title>
@@ -49,6 +50,7 @@
             <h1>Personal Information</h1>
             <label for="fname">First Name</label>
             <input type="text" id="fname" name="fname" required>
+            <input type="hidden" id="userId" name="userId" value="1" required>
 
             <label for="mname">Middle Name</label>
             <input type="text" id="mname" name="mname" required>
@@ -87,23 +89,25 @@
             <input type="text" id="profession" name="profession" required>
             
             <div class="button-container" style="margin-top: 5px;">
-                <button onclick="submitFunction()" type="button" style="margin-right: 10px;">Submit</button>
-                <button onclick="cancelUpdateInfo()" type="button">Cancel</button>
+                <button onclick="submitFunction()" type="button" style="margin-right: 10px; background: #20638f; color: #f0f0f0;">Save</button>
+                <button onclick="deleteFunction()" type="button" style="margin-right: 10px; background: #DA4453;  color: #f0f0f0;">Delete</button>
+                <button onclick="cancelUpdateInfo()" type="button" style="background: #727274;  color: #f0f0f0;">Cancel</button>
             </div>
         </form>
         
       
     </div> 
     
+    <script src="plugins/sweetalert2-master/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function(){
+            var userId = document.getElementById("userId").value;
             $.ajax({
                 url: 'getProfile.php',                        
                 type: 'POST',                                  
-                data: {
-                    "load": 1
-                },
+                data : { userId: userId },
                 success: function(response){    // response contains json object in it
                     var data = JSON.parse(response);
 
@@ -128,61 +132,88 @@
 
         });
 
-        // function submitFunction() {
-        //     var fname = document.getElementById("fname").value;
-        //     var mname = document.getElementById("mname").value;
-        //     var lname = document.getElementById("lname").value;
-        //     var birthday = document.getElementById("birthday").value;
-        //     var mail = document.getElementById("mail").value;
-        //     var contact = document.getElementById("contact").value;
-        //     var address = document.getElementById("address").value;
-        //     var barangay = document.getElementById("barangay").value;
-        //     var sex = document.getElementById("sex").value;
+        function submitFunction() {
+            var fname = document.getElementById("fname").value;
+            var mname = document.getElementById("mname").value;
+            var lname = document.getElementById("lname").value;
+            var birthday = document.getElementById("birthday").value;
+            var mail = document.getElementById("mail").value;
+            var contact = document.getElementById("contact").value;
+            var address = document.getElementById("address").value;
+            var barangay = document.getElementById("barangay").value;
+            var sex = document.getElementById("sex").value;
+            var userId = document.getElementById("userId").value;
+            var civilstat = document.getElementById("civilstat").value;
+            var employmentstat = document.getElementById("employmentstat").value;
+            var employer = document.getElementById("employer").value;
+            var profession = document.getElementById("profession").value;
 
-        //     var civilstat = document.getElementById("civilstat").value;
-        //     var employmentstat = document.getElementById("employmentstat").value;
-        //     var employer = document.getElementById("employer").value;
-        //     var profession = document.getElementById("profession").value;
+            $.ajax({
+                type : "POST",  //type of method
+                url  : "updateProfile.php",  //your page
+                data : { fname: fname, mname: mname, lname: lname, birthday: birthday, mail: mail, contact: contact,
+                    address: address, barangay: barangay, sex: sex, civilstat: civilstat, employmentstat: employmentstat,
+                    employer: employer, profession: profession, userId: userId},// passing the values
+                success: function(response){ 
+                    response = response.trim(); 
+                    if(response === "success"){
+                        Swal.fire({
+                            title: 'Successfully Updated!',
+                            text  : ''
+                        }).then(function(){
+                            location.reload();
+                        })
+                    }else{
+                        Swal.fire({
+                            title : 'Cannot updated records',
+                            text  : 'Please check your inputs'
+                        })
+                    }
+                }
+            });
+            
+        }
 
-        //     // var id = document.getElementById("id").value;
-        //     $.ajax({
-        //         type : "POST",  //type of method
-        //         url  : "saveprofile.php",  //your page
-        //         data : { fname : fname, gender : gender, age : age, birthdate : birthdate, address : address, mobilenumber : mobilenumber,
-        //             dosageseq : dosageseq, dateofvaccine : dateofvaccine, brand : brand },// passing the values
-        //         success: function(response){ 
-        //             response = response.trim(); 
-        //             if(response === "success"){
-        //                 alert("success");
-        //                 // swal({
-        //                 //     type: 'success',
-        //                 //     title: 'Successfully Updated!',
-        //                 //     text  : ''
-        //                 // }).then(function(){
-        //                 //     hideUpdateModal();
-        //                 //     $('#brgyTable').DataTable().ajax.reload();
-        //                 // })
-        //             }else{
-        //                 alert("error");
-        //                 // swal({
-        //                 //     type  : 'error',
-        //                 //     title : 'Cannot updated records',
-        //                 //     text  : 'Please check your inputs'
-        //                 // })
-        //             }
-        //         }
-        //     });
-        // }
+        function deleteFunction() {
+            var userId = document.getElementById("userId").value;
+                    
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'deleteProfile.php',  // URL of the PHP script to delete the profile
+                        data: { userId: userId },  // Sending a flag to indicate the delete action
+                        success: function(response) {
+                            response = response.trim();
+                            if (response === "success") {
+                                swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Your profile has been deleted.'
+                                }).then(() => {
+                                   deleteProfile(); // Redirect to signup.html
+                                });
+                            } else {
+                                swal.fire({
+                                    title: 'Error!',
+                                    text: 'An error occurred while deleting your profile.'
+                                });
+                            }
+                        }
+                    });
+
+                } else {
+                    // Handle when the user cancels
+                    console.log('User cancelled the action');
+                }
+            });
+        }  
     </script>
-    
-
-
 </body>
-
-
-
-
-
-
 </html>
 
