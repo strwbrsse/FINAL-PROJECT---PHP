@@ -1,4 +1,3 @@
-// Error message constants
 const MESSAGES = {
     LOADING: {
         vaccines: 'Loading your vaccination records...',
@@ -193,7 +192,6 @@ document.addEventListener('vaccinationAdded', onVaccinationAdded);
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
     updateVaccinationProgress();
-    // ... other initialization code ...
 });
 
 // Refresh progress periodically (optional)
