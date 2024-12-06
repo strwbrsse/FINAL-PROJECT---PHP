@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShotSafe - Appointments</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Assets/Styles/styles.css">
+    <style>
+        .appointments-container {
+            padding: 20px;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .appointment-list {
+            margin-bottom: 30px;
+        }
+
+        .appointment-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-new {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom-color: #4a90e2;
+            color: #4a90e2;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="../Assets/Photos/shotsafe logo.png" alt="ShotSafe Logo">
+            <h2>ShotSafe</h2>
+        </div>
+        <nav>
+            <a href="../FrontEnd/dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="../FrontEnd/appointments.html" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Appointments</span>
+            </a>
+            <a href="../FrontEnd/profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="../FrontEnd/about.html" class="nav-item">
+                <i class="fas fa-info-circle"></i>
+                <span>About Us</span>
+            </a>
+            <a href="../BackEnd/logout.php" class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <div class="breadcrumbs">
+            <a href="../FrontEnd/dashboard.html">Home</a> &gt;
+            <a href="../FrontEnd/appointments.html">Appointments</a> &gt;
+            <span>Manage Appointments</span>
+        </div>
+        <div class="appointments-container">
+            <div class="appointment-header">
+                <h2>My Appointments</h2>
+                <button class="btn-new" onclick="openNewAppointmentModal()">
+                    <i class="fas fa-plus"></i> New Appointment
+                </button>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('upcoming')">Upcoming</div>
+                <div class="tab" onclick="switchTab('past')">Past</div>
+            </div>
+
+            <div id="upcoming-appointments" class="appointment-list"></div>
+            <div id="past-appointments" class="appointment-list" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div id="appointment-modal" class="modal">
+        <div class="modal-content">
+            <h3>Schedule New Appointment</h3>
+            <form id="appointment-form">
+                <div class="form-group">
+                    <label for="vaccine_type">Vaccine Type*</label>
+                    <select name="vaccine_type" id="vaccine_type" required>
+                        <option value="">Select a vaccine</option>
+                        <option value="Tetanus">Tetanus</option>
+                        <option value="TDAP">TDAP (Tetanus, Diphtheria, Pertussis)</option>
+                        <option value="MMR">MMR (Measles, Mumps, Rubella)</option>
+                        <option value="Varicella">Varicella (Chickenpox)</option>
+                        <option value="Polio">Polio (IPV)</option>
+                        <option value="Rabies">Rabies</option>
+                        <option value="Yellow Fever">Yellow Fever</option>
+                        <option value="Hepatitis A">Hepatitis A</option>
+                        <option value="Hepatitis B">Hepatitis B</option>
+                        <option value="Influenza">Influenza (Flu Shot)</option>
+                        <option value="Pfizer">Pfizer COVID-19</option>
+                        <option value="Moderna">Moderna COVID-19</option>
+                        <option value="Johnson & Johnson">Johnson & Johnson COVID-19</option>
+                        <option value="Dengue">Dengue</option>
+                    </select>
+                    <div id="vaccine-description" class="description-text"></div>
+                </div>
+                <div class="form-group">
+                    <label for="appointment_date">Date*</label>
+                    <input type="date" 
+                           id="appointment_date" 
+                           name="appointment_date" 
+                           min="<?php echo date('Y-m-d'); ?>" 
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="appointment_time">Time*</label>
+                    <select name="appointment_time" id="appointment_time" required>
+                        <option value="">Select a time</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="09:30">9:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-new">Schedule Appointment</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppointments('upcoming');
+            loadAvailableVaccines();
+            checkSession();
+        });
+
+        async function loadAppointments(type) {
+            try {
+                const action = type === 'upcoming' ? 'get_upcoming' : 'get_past';
+                const response = await fetch(`../BackEnd/Main.php?action=${action}`, {
+                    method: 'GET',
+                    credentials: 'include' 
+                });
+                const data = await response.json();
+                
+                const container = document.getElementById(`${type}-appointments`);
+                container.innerHTML = '';
+
+                if (data.success && data.data) {
+                    if (data.data.length === 0) {
+                        container.innerHTML = `<div class="no-appointments">No ${type} appointments found</div>`;
+                        return;
+                    }
+
+                    data.data.forEach(appointment => {
+                        const date = new Date(appointment.appointment_date);
+                        const formattedDate = date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        const time = appointment.appointment_time.substring(0, 5);
+                        
+                        const appointmentEl = document.createElement('div');
+                        appointmentEl.className = 'appointment-item';
+                        appointmentEl.innerHTML = `
+                            <div>${formattedDate}</div>
+                            <div>${time}</div>
+                            <div>${appointment.vaccine_type}</div>
+                            <div>${appointment.status}</div>
+                            <div class="appointment-actions">
+                                ${type === 'upcoming' && appointment.status === 'scheduled' ? `
+                                    <button class="btn-cancel" onclick="cancelAppointment(${appointment.id})">
+                                        Cancel
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `;
+                        container.appendChild(appointmentEl);
+                    });
+                } else {
+                    container.innerHTML = '<div class="error">No appointments found</div>';
+                }
+            } catch (error) {
+                document.getElementById(`${type}-appointments`).innerHTML = 
+                    '<div class="error">Failed to load appointments</div>';
+            }
+        }
+
+        async function loadAvailableVaccines() {
+            try {
+                const vaccines = [
+                    { value: 'TDAP', label: 'TDAP (Tetanus, Diphtheria, Pertussis)' },
+                    { value: 'MMR', label: 'MMR (Measles, Mumps, Rubella)' },
+                    { value: 'Varicella', label: 'Varicella (Chickenpox)' },
+                    { value: 'Polio', label: 'Polio (IPV)' },
+                    { value: 'Rabies', label: 'Rabies' },
+                    { value: 'Yellow Fever', label: 'Yellow Fever' },
+                    { value: 'Hepatitis A', label: 'Hepatitis A' },
+                    { value: 'Hepatitis B', label: 'Hepatitis B' },
+                    { value: 'Influenza', label: 'Influenza (Flu Shot)' },
+                    { value: 'Pfizer', label: 'Pfizer COVID-19' },
+                    { value: 'Moderna', label: 'Moderna COVID-19' },
+                    { value: 'Johnson & Johnson', label: 'Johnson & Johnson COVID-19' },
+                    { value: 'Dengue', label: 'Dengue' }
+                ];
+                
+                const select = document.querySelector('select[name="vaccine_type"]');
+                select.innerHTML = '<option value="">Select a vaccine</option>';
+                
+                vaccines.forEach(vaccine => {
+                    const option = document.createElement('option');
+                    option.value = vaccine.value;
+                    option.textContent = vaccine.label;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showError('Failed to load available vaccines');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${tab === 'upcoming' ? '1' : '2'})`).classList.add('active');
+            
+            document.getElementById('upcoming-appointments').style.display = tab === 'upcoming' ? 'block' : 'none';
+            document.getElementById('past-appointments').style.display = tab === 'past' ? 'block' : 'none';
+            
+            loadAppointments(tab);
+        }
+
+        function openNewAppointmentModal() {
+            document.getElementById('appointment-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('appointment-modal').style.display = 'none';
+        }
+
+        document.getElementById('appointment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                action: 'create_appointment',
+                vaccine_type: document.querySelector('select[name="vaccine_type"]').value,
+                appointment_date: document.querySelector('input[name="appointment_date"]').value,
+                appointment_time: document.querySelector('select[name="appointment_time"]').value
+            };
+
+            try {
+                const response = await fetch('../BackEnd/Main.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                    credentials: 'include' 
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    closeModal();
+                    this.reset();
+                    await loadAppointments('upcoming');
+                    alert('Appointment scheduled successfully!');
+                } else {
+                    alert(result.message || 'Failed to create appointment');
+                }
+            } catch (error) {
+                alert('Failed to create appointment. Please try again.');
+            }
+        });
+
+        async function cancelAppointment(appointmentId) {
+            if (!confirm('Are you sure you want to cancel this appointment?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('../BackEnd/Main.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'cancel_appointment',
+                        appointment_id: appointmentId,
+                        status: 'cancelled'
+                    }),
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    await loadAppointments('upcoming');
+                    alert('Appointment cancelled successfully');
+                } else {
+                    alert(result.message || 'Failed to cancel appointment');
+                }
+            } catch (error) {
+                alert('Failed to cancel appointment');
+            }
+        }
+
+        async function checkSession() {
+            try {
+                await fetch('../BackEnd/check_session.php');
+            } catch (error) {
+                // Session check failed - handle if needed
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -2,34 +2,41 @@
 
 require_once 'DB_Operations.php';
 
-// DEBUG: Handles user authentication and login verification
+// Handles user authentication and login verification
 class userAuth
 {
-    // DEBUG: Database operations instance
     private $SQL_Operations;
 
-    // DEBUG: Initialize with database configuration
+    // Initialize with database configuration
     public function __construct($config)
     {
         $this->SQL_Operations = new SQL_Operations($config);
     }
 
-    // DEBUG: Authenticate user login attempt
+    // Authenticate user login attempt
     public function authenticate($email, $password)
     {
-        // DEBUG: Get hashed password from database for email
-        $hashedPass = $this->SQL_Operations->authenticate($email);
+        $userData = $this->SQL_Operations->authenticate($email);
 
-        // DEBUG: Validate email presence
         if (empty($email)) {
             return ["success" => false, "message" => "Email is required"];
         }
 
-        // DEBUG: Verify password if user exists
-        if ($hashedPass !== null) {
-            // DEBUG: Compare provided password with stored hash
-            if (password_verify($password, $hashedPass)) {
-                return ["success" => true, "message" => "Access granted"];
+        if ($userData !== null) {
+            if (password_verify($password, $userData['password'])) {
+                session_start();
+                $_SESSION['user_id'] = $userData['user_id'];
+                $_SESSION['user_name'] = $userData['fname'] . ' ' . $userData['lname'];
+                
+                return [
+                    "success" => true, 
+                    "message" => "Access granted",
+                    "redirect" => "dashboard.html",
+                    "userData" => [
+                        "userId" => $userData['user_id'],
+                        "userName" => $userData['fname'] . ' ' . $userData['lname']
+                    ]
+                ];
             } else {
                 return ["success" => false, "message" => "Sign in failed: Incorrect Password"];
             }
@@ -38,7 +45,7 @@ class userAuth
         }
     }
 
-    // DEBUG: Clean up database connection
+    // Clean up database connection
     public function close()
     {
         $this->SQL_Operations->close();

@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['userData'])) {
+    header('Location: ../FrontEnd/Register.html');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -23,6 +30,7 @@
                 <h2>Sign up</h2>
                 <form action="../BackEnd/Main.php" method="post">
                     <input type="hidden" name="action" value="signup">
+                    <input type="hidden" name="userData" value="<?php echo htmlspecialchars(json_encode($_SESSION['userData'] ?? [])); ?>">
                     <input type="text" placeholder="Username" name="Name" required>
                     <div id="username-error" class="error-message"></div>
                     <input type="password" placeholder="Password" name="Pass" required>

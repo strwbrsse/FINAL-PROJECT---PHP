@@ -48,28 +48,39 @@ CREATE TABLE employment (
 
 CREATE TABLE User_Auth (
     auth_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE,
+    name_id INT NOT NULL,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES personal(personal_id)
+    FOREIGN KEY (name_id) REFERENCES user_name(name_id)
 );
 
 CREATE TABLE Health (
     health_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    name_id INT NOT NULL,
     allergy_description TEXT,
     disease_description TEXT,
-    FOREIGN KEY (user_id) REFERENCES personal(personal_id)
+    FOREIGN KEY (name_id) REFERENCES user_name(name_id)
 );
 
 CREATE TABLE Vaccine (
     vaccine_id INT AUTO_INCREMENT PRIMARY KEY,	
-    user_id INT NOT NULL,
+    name_id INT NOT NULL,
     vaccine_name VARCHAR(100) NOT NULL,
     date_administered DATE NOT NULL,
     dose_number INT NOT NULL,
     date_booked DATE,
-    FOREIGN KEY (user_id) REFERENCES personal(personal_id)
+    FOREIGN KEY (name_id) REFERENCES user_name(name_id)
+);
+
+CREATE TABLE appointments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    vaccine_type VARCHAR(255) NOT NULL,
+    appointment_date DATE NOT NULL,
+    appointment_time TIME NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'scheduled',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user_name(name_id)
 );
 
 

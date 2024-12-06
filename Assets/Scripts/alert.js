@@ -1,20 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector("form");
-  const MIN_PROCESSING_TIME = 800; // Minimum processing time in milliseconds
+  const MIN_PROCESSING_TIME = 800;
 
   function clearErrors() {
     document.querySelectorAll(".error-message").forEach((element) => {
       element.textContent = "";
       element.style.display = "none";
     });
+    document.querySelectorAll("input, select, textarea").forEach((element) => {
+      element.classList.remove("error");
+    });
   }
 
   function showError(fieldname, message) {
-    const errorElement = document.getElementById(`${fieldname}-error`);
+    const errorElement = document.getElementById(`${fieldname.toLowerCase()}-error`);
     if (errorElement) {
       errorElement.textContent = message;
       errorElement.style.display = "block";
-      errorElement.style.color = "red";
+      
+      const inputField = document.querySelector(`[name="${fieldname.toLowerCase()}"]`);
+      if (inputField) {
+        inputField.classList.add("error");
+      }
     }
   }
 
@@ -39,57 +46,33 @@ document.addEventListener("DOMContentLoaded", function () {
       submitButton.textContent = "Processing...";
     }
 
-    const startTime = Date.now();
-
     fetch("../BackEnd/Main.php", {
       method: "POST",
       body: formData,
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, MIN_PROCESSING_TIME - elapsedTime);
-
-        return new Promise(resolve => {
-          setTimeout(() => resolve(data), remainingTime);
-        });
-      })
+      .then((response) => response.json())
       .then((data) => {
         console.log("Server response:", data);
+        
         if (data.success) {
+          if (data.userData) {
+            console.log("Setting user data:", data.userData);
+            sessionStorage.setItem('userId', data.userData.userId);
+            sessionStorage.setItem('userName', data.userData.userName);
+          }
+          
           swal("Success!", data.message, "success").then(() => {
-            if (action === 'register') {
-              window.location.href = "../FrontEnd/SignUp.html";
-            } else if (action === 'signup') {
-              window.location.href = data.redirect || "../FrontEnd/dashboard.html";
-            } else if (action === 'signin') {
-              window.location.href = "../FrontEnd/dashboard.html";
+            if (data.redirect) {
+              window.location.href = data.redirect;
             }
           });
         } else {
           if (data.errors && Array.isArray(data.errors)) {
-            const isDuplicateError = data.errors.some(error => 
-                error.message.includes("already registered") || 
-                error.message.includes("already exists")
-            );
-            
-            if (isDuplicateError) {
-              const errorMessage = data.errors.map(error => error.message).join('\n');
-              swal("Error!", errorMessage, "error");
-            } else {
-              data.errors.forEach((error) => {
-                showError(error.field.toLowerCase(), error.message);
-              });
-            }
-          } else if (data.field && data.message) {
-            showError(data.field.toLowerCase(), data.message);
+            data.errors.forEach(error => {
+              showError(error.field, error.message);
+            });
           } else {
-            swal("Error!", data.message || "An error occurred", "error");
+            swal("Error!", data.message || "An unexpected error occurred", "error");
           }
         }
       })
