@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Database connection (adjust credentials as needed)
+// Database connection
 $db = new PDO('mysql:host=localhost;dbname=shotsafe_data', 'username', 'password');
 
 class DashboardData {
