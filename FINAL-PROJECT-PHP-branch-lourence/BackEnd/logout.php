@@ -61,4 +61,3 @@ if (isset($_GET['action']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
 // If no action, redirect to register
 header('Location: register.html');
 exit;
-?> 
