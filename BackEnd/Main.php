@@ -6,6 +6,7 @@ require_once 'UserAuth.php';
 require_once 'Register.php';
 require_once 'SignUp.php';
 require_once 'appointments.php';
+require_once 'ProfileHandler.php';
 
 // Process requests for both POST and GET
 if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET") {
@@ -125,6 +126,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
                     throw new Exception("Invalid method for appointment cancellation");
                 }
                 $result = $Appointment->handleAppointment($action, $data);
+                break;
+
+            case 'get_profile':
+            case 'update_profile':
+            case 'delete_profile':
+                if (!isset($_SESSION['name_id'])) {
+                    $result = ["success" => false, "message" => "User not logged in"];
+                    break;
+                }
+                $Profile = new ProfileHandler($dbConfig);
+                $result = $Profile->handleProfile($action, $_POST);
+                $Profile->close();
+                break;
+
+            case 'get_dashboard_data':
+                if (!isset($data['name_id'])) {
+                    throw new Exception('Name ID is required');
+                }
+                
+                $nameId = htmlspecialchars($data['name_id'], ENT_QUOTES, 'UTF-8');
+                
+                $result = [
+                    'success' => true,
+                    'user' => $UserAuth->getProfile($nameId)['userData'],
+                    'appointments' => $Appointment->handleAppointment('get_upcoming', ['name_id' => $nameId])['data'],
+                    'vaccineHistory' => $Appointment->handleAppointment('get_past', ['name_id' => $nameId])['data']
+                ];
                 break;
 
             // Handle invalid action parameter

@@ -23,6 +23,7 @@ class Filters
     {
         $this->errors = [];
 
+        // Validate first name
         if (trim($fname) === '') {
             $this->errors[] = ["field" => "fname", "message" => "First name is required"];
         } else {
@@ -36,7 +37,31 @@ class Filters
             }
         }
 
-        // ... rest of the name validation code ...
+        // Validate middle name (optional, but if provided must be valid)
+        if (trim($mname) !== '' && trim($mname) !== 'N/A') {
+            if (strlen($mname) > self::maxName) {
+                $this->errors[] = ["field" => "mname", "message" => "Middle name is too long."];
+            } elseif (strlen($mname) < self::minName) {
+                $this->errors[] = ["field" => "mname", "message" => "Middle name is too short."];
+            }
+            if (!preg_match(self::gen_rgx, $mname)) {
+                $this->errors[] = ["field" => "mname", "message" => "Invalid input in Middle name."];
+            }
+        }
+
+        // Validate last name
+        if (trim($lname) === '') {
+            $this->errors[] = ["field" => "lname", "message" => "Last name is required"];
+        } else {
+            if (strlen($lname) > self::maxName) {
+                $this->errors[] = ["field" => "lname", "message" => "Last name is too long."];
+            } elseif (strlen($lname) < self::minName) {
+                $this->errors[] = ["field" => "lname", "message" => "Last name is too short."];
+            }
+            if (!preg_match(self::gen_rgx, $lname)) {
+                $this->errors[] = ["field" => "lname", "message" => "Invalid input in Last name."];
+            }
+        }
         
         $this->addToCollectedErrors();
         return empty($this->errors);
@@ -119,14 +144,14 @@ class Filters
     public function isValidProfession($profession)
     {
         $this->errors = [];
-        if (trim($profession) === '') {
-            $this->errors[] = ["field" => "profession", "message" => "Profession is required"];
-        } elseif(strlen($profession) < 2) {
-            $this->errors[] = ["field" => "profession", "message" => "Profession is too short"];
-        } elseif (strlen($profession) > 100) {
-            $this->errors[] = ["field" => "profession", "message" => "Profession is too long"];
-        } elseif (!preg_match(self::gen_rgx, $profession)) {
-            $this->errors[] = ["field" => "profession", "message" => "Invalid input in Profession"];
+        if (trim($profession) !== '' && trim($profession) !== 'N/A') {
+            if(strlen($profession) < self::minName) {
+                $this->errors[] = ["field" => "profession", "message" => "Profession is too short"];
+            } elseif (strlen($profession) > 100) {
+                $this->errors[] = ["field" => "profession", "message" => "Profession is too long"];
+            } elseif (!preg_match(self::gen_rgx, $profession)) {
+                $this->errors[] = ["field" => "profession", "message" => "Invalid input in Profession"];
+            }
         }
         $this->addToCollectedErrors();
         return empty($this->errors);
@@ -266,14 +291,14 @@ class Filters
     public function isValidEmployer($empl)
     {
         $this->errors = [];
-        if (trim($empl) === '') {
-            $this->errors[] = ["field" => "employer", "message" => "Employer is required"];
-        } elseif(strlen($empl) < 2) {
-            $this->errors[] = ["field" => "employer", "message" => "Employer is too short"];
-        } elseif (strlen($empl) > 50) {
-            $this->errors[] = ["field" => "employer", "message" => "Employer is too long"];
-        } elseif (!preg_match(self::gen_rgx, $empl)) {
-            $this->errors[] = ["field" => "employer", "message" => "Invalid input in Employer"];
+        if (trim($empl) !== '' && trim($empl) !== 'N/A') {
+            if(strlen($empl) < self::minName) {
+                $this->errors[] = ["field" => "employer", "message" => "Employer is too short"];
+            } elseif (strlen($empl) > self::maxName) {
+                $this->errors[] = ["field" => "employer", "message" => "Employer is too long"];
+            } elseif (!preg_match(self::gen_rgx, $empl)) {
+                $this->errors[] = ["field" => "employer", "message" => "Invalid input in Employer"];
+            }
         }
         $this->addToCollectedErrors();
         return empty($this->errors);

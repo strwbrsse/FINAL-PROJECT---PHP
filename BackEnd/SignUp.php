@@ -58,16 +58,18 @@ class UserSignUp
             $result = $this->SQL_Operations->signUp($Name, $Pass, $_SESSION['userData']);
             
             if ($result['success']) {
-                $_SESSION['user_id'] = $result['user_id'];
+                $_SESSION['name_id'] = $result['user_id'];
                 $_SESSION['user_name'] = $result['user_name'];
+                $_SESSION['upn'] = $_SESSION['userData']['mail'];
                 
                 return [
                     "success" => true,
                     "message" => "Account created successfully!",
                     "redirect" => "../FrontEnd/dashboard.html",
                     "userData" => [
-                        "userId" => $result['user_id'],
-                        "userName" => $result['user_name']
+                        "name_id" => $result['user_id'],
+                        "userName" => $result['user_name'],
+                        "upn" => $_SESSION['userData']['mail']
                     ]
                 ];
             } else {

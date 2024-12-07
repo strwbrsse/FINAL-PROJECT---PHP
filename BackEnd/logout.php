@@ -18,47 +18,34 @@ class LogoutManager {
             // Clear any other cookies set by the application
             $this->clearAuthCookies();
 
-            return [
-                'success' => true,
-                'message' => 'Logged out successfully',
-                'redirect' => 'register.html'
-            ];
+            // Get the redirect URL from the query parameter, default to index if not set
+            $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '../FrontEnd/index.html';
+            
+            // Validate the redirect URL to prevent open redirect vulnerability
+            if (strpos($redirect, '../FrontEnd/') === 0) {
+                header("Location: " . $redirect);
+            } else {
+                header("Location: ../FrontEnd/index.html");
+            }
+            exit();
         } catch (Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'Error during logout: ' . $e->getMessage()
-            ];
+            // Log the error and redirect to index anyway
+            error_log("Logout error: " . $e->getMessage());
+            header("Location: ../FrontEnd/index.html");
+            exit();
         }
     }
 
     private function clearAuthCookies() {
-        if (isset($_COOKIE['remember_me'])) {
-            setcookie('remember_me', '', time() - 3600, '/');
-        }
-
+        // Clear any authentication cookies
         if (isset($_COOKIE['user_token'])) {
             setcookie('user_token', '', time() - 3600, '/');
         }
+        // Add any other cookies that need to be cleared
     }
 }
 
-// Handle the logout request
-if (isset($_GET['action']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $logoutManager = new LogoutManager();
-    $response = $logoutManager->logout();
-    
-    // For AJAX requests
-    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-        header('Content-Type: application/json');
-        echo json_encode($response);
-    } else {
-        header('Location: register.html');
-    }
-    exit;
-}
-
-// If no action, redirect to register
-header('Location: register.html');
-exit;
-?> 
+// Create instance and execute logout
+$logoutManager = new LogoutManager();
+$logoutManager->logout();
+?>

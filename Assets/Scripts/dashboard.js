@@ -192,9 +192,12 @@ document.addEventListener('vaccinationAdded', onVaccinationAdded);
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
     updateVaccinationProgress();
+    fetchNextAppointment();
+
+    setInterval(fetchNextAppointment, 60000);
 });
 
-// Refresh progress periodically (optional)
+
 setInterval(updateVaccinationProgress, 5 * 60 * 1000); // Every 5 minutes
 
 // Search functionality
@@ -212,3 +215,34 @@ searchInput.addEventListener('input', function(e) {
         }
     });
 });
+
+async function fetchNextAppointment() {
+    try {
+        const response = await fetch('../BackEnd/get_next_appointment.php');
+        const data = await response.json();
+        
+        const nextAppointmentElement = document.getElementById('next-appointment');
+        
+        if (data && data.next_appointment) {
+            const appointmentDate = new Date(data.next_appointment.date);
+            const formattedDate = appointmentDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const formattedTime = data.next_appointment.time;
+            
+            nextAppointmentElement.innerHTML = `
+                <strong>${formattedDate}</strong><br>
+                Time: ${formattedTime}<br>
+                Vaccine: ${data.next_appointment.vaccine_name}
+            `;
+        } else {
+            nextAppointmentElement.textContent = 'No upcoming appointments';
+        }
+    } catch (error) {
+        console.error('Error fetching next appointment:', error);
+        document.getElementById('next-appointment').textContent = 'Error loading appointment';
+    }
+}
