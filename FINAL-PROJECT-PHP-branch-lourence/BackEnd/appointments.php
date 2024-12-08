@@ -28,9 +28,6 @@ class AppointmentHandler {
             case 'get_next':
                 $this->getNextAppointment($data);
                 break;
-            case 'get_doses':
-                $this->getUpcomingDoses($data);
-                break;
             case 'cancel_appointment':
                 $this->cancelAppointment($data);
                 break;
@@ -42,7 +39,7 @@ class AppointmentHandler {
     }
 
     private function createAppointment($data) {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['name_id'])) {
             $this->response['success'] = false;
             $this->response['message'] = "User not authenticated";
             return;
@@ -53,8 +50,11 @@ class AppointmentHandler {
                 throw new Exception("Missing required fields");
             }
 
+            error_log('Creating appointment with data: ' . print_r($data, true));
+            error_log('Session name_id: ' . $_SESSION['name_id']);
+
             $result = $this->SQL_Operations->createAppointment(
-                $_SESSION['user_id'],
+                $_SESSION['name_id'],
                 $data['vaccine_type'],
                 $data['appointment_date'],
                 $data['appointment_time']
@@ -67,20 +67,21 @@ class AppointmentHandler {
                 throw new Exception("Failed to create appointment");
             }
         } catch (Exception $e) {
+            error_log('Error creating appointment: ' . $e->getMessage());
             $this->response['success'] = false;
             $this->response['message'] = $e->getMessage();
         }
     }
 
     private function getUpcomingAppointments($data) {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['name_id'])) {
             $this->response['success'] = false;
             $this->response['message'] = "User not authenticated";
             return;
         }
 
         try {
-            $appointments = $this->SQL_Operations->getUpcomingAppointments($_SESSION['user_id']);
+            $appointments = $this->SQL_Operations->getUpcomingAppointments($_SESSION['name_id']);
             $this->response['success'] = true;
             $this->response['data'] = $appointments;
         } catch (Exception $e) {
@@ -90,14 +91,14 @@ class AppointmentHandler {
     }
 
     private function getPastAppointments($data) {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['name_id'])) {
             $this->response['success'] = false;
             $this->response['message'] = "User not authenticated";
             return;
         }
 
         try {
-            $appointments = $this->SQL_Operations->getPastAppointments($_SESSION['user_id']);
+            $appointments = $this->SQL_Operations->getPastAppointments($_SESSION['name_id']);
             $this->response['success'] = true;
             $this->response['data'] = $appointments;
         } catch (Exception $e) {
@@ -107,14 +108,14 @@ class AppointmentHandler {
     }
 
     private function getNextAppointment($data) {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['name_id'])) {
             $this->response['success'] = false;
             $this->response['message'] = "User not authenticated";
             return;
         }
 
         try {
-            $appointment = $this->SQL_Operations->getNextAppointment($_SESSION['user_id']);
+            $appointment = $this->SQL_Operations->getNextAppointment($_SESSION['name_id']);
             $this->response['success'] = true;
             $this->response['data'] = $appointment;
         } catch (Exception $e) {
@@ -123,25 +124,8 @@ class AppointmentHandler {
         }
     }
 
-    private function getUpcomingDoses($data) {
-        if (!isset($_SESSION['user_id'])) {
-            $this->response['success'] = false;
-            $this->response['message'] = "User not authenticated";
-            return;
-        }
-
-        try {
-            $doses = $this->SQL_Operations->getUpcomingDoses($_SESSION['user_id']);
-            $this->response['success'] = true;
-            $this->response['data'] = $doses;
-        } catch (Exception $e) {
-            $this->response['success'] = false;
-            $this->response['message'] = $e->getMessage();
-        }
-    }
-
     private function cancelAppointment($data) {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['name_id'])) {
             $this->response['success'] = false;
             $this->response['message'] = "User not authenticated";
             return;
@@ -156,7 +140,7 @@ class AppointmentHandler {
 
             $result = $this->SQL_Operations->updateAppointmentStatus(
                 $data['appointment_id'],
-                $_SESSION['user_id'],
+                $_SESSION['name_id'],
                 'cancelled'
             );
 

@@ -25,17 +25,13 @@ class userAuth
         if ($userData !== null) {
             if (password_verify($password, $userData['password'])) {
                 session_start();
-                $_SESSION['user_id'] = $userData['user_id'];
-                $_SESSION['user_name'] = $userData['fname'] . ' ' . $userData['lname'];
+                $_SESSION['name_id'] = $userData['user_id'];
                 
                 return [
                     "success" => true, 
                     "message" => "Access granted",
-                    "redirect" => "dashboard.html",
-                    "userData" => [
-                        "userId" => $userData['user_id'],
-                        "userName" => $userData['fname'] . ' ' . $userData['lname']
-                    ]
+                    "redirect" => "../FrontEnd/dashboard.html",
+                    "name_id" => $userData['user_id']
                 ];
             } else {
                 return ["success" => false, "message" => "Sign in failed: Incorrect Password"];
@@ -53,9 +49,9 @@ class userAuth
 
     public function updateProfile($userId, $data) {
         try {
-            $mysqli = $this->SQL_Operations->connect();
+            $mysqli = $this->SQL_Operations->getConnection();
             
-            // Add validation here as needed
+            // Add validation here as needed 
             $query = "UPDATE users SET 
                       fname = ?, 
                       mname = ?,
@@ -94,7 +90,7 @@ class userAuth
 
     public function deleteProfile($userId) {
         try {
-            $mysqli = $this->SQL_Operations->connect();
+            $mysqli = $this->SQL_Operations->getConnection();
             
             // Start transaction
             mysqli_begin_transaction($mysqli);
@@ -125,9 +121,9 @@ class userAuth
 
     public function getProfile($userId) {
         try {
-            $mysqli = $this->SQL_Operations->connect();
+            $mysqli = $this->SQL_Operations->getConnection();
             
-            $query = "SELECT fname, mname, lname, email, contact, birthday, sex, civilstat, address 
+            $query = "SELECT user_id, fname, mname, lname, email, contact, birthday, sex, civilstat, address 
                       FROM users 
                       WHERE user_id = ?";
             
@@ -141,7 +137,18 @@ class userAuth
                 if ($userData) {
                     return [
                         "success" => true,
-                        "userData" => $userData
+                        "userData" => [
+                            "user_id" => $userData['user_id'],
+                            "fname" => $userData['fname'],
+                            "mname" => $userData['mname'],
+                            "lname" => $userData['lname'],
+                            "email" => $userData['email'],
+                            "contact" => $userData['contact'],
+                            "birthday" => $userData['birthday'],
+                            "sex" => $userData['sex'],
+                            "civilstat" => $userData['civilstat'],
+                            "address" => $userData['address']
+                        ]
                     ];
                 }
             }

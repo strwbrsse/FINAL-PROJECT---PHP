@@ -6,6 +6,7 @@ require_once 'UserAuth.php';
 require_once 'Register.php';
 require_once 'SignUp.php';
 require_once 'appointments.php';
+require_once 'ProfileHandler.php';
 
 // Process requests for both POST and GET
 if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET") {
@@ -127,31 +128,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
                 $result = $Appointment->handleAppointment($action, $data);
                 break;
 
-            case 'update_profile':
-                // Sanitize all POST data
-                $sanitizedData = array_map(function($value) {
-                    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-                }, $_POST);
-                
-                $result = $UserAuth->updateProfile(
-                    $_SESSION['user_id'],
-                    $sanitizedData
-                );
-                break;
-
-            case 'delete_profile':
-                $result = $UserAuth->deleteProfile($_SESSION['user_id']);
-                if ($result['success']) {
-                    session_destroy();
-                }
-                break;
-
             case 'get_profile':
-                if (!isset($_SESSION['user_id'])) {
+            case 'update_profile':
+            case 'delete_profile':
+                if (!isset($_SESSION['name_id'])) {
                     $result = ["success" => false, "message" => "User not logged in"];
                     break;
                 }
-                $result = $UserAuth->getProfile($_SESSION['user_id']);
+                $Profile = new ProfileHandler($dbConfig);
+                $result = $Profile->handleProfile($action, $_POST);
+                $Profile->close();
+                break;
+
+            case 'get_dashboard_data':
+                if (!isset($data['name_id'])) {
+                    throw new Exception('Name ID is required');
+                }
+                
+                $nameId = htmlspecialchars($data['name_id'], ENT_QUOTES, 'UTF-8');
+                
+                $result = [
+                    'success' => true,
+                    'user' => $UserAuth->getProfile($nameId)['userData'],
+                    'appointments' => $Appointment->handleAppointment('get_upcoming', ['name_id' => $nameId])['data'],
+                    'vaccineHistory' => $Appointment->handleAppointment('get_past', ['name_id' => $nameId])['data']
+                ];
                 break;
 
             // Handle invalid action parameter

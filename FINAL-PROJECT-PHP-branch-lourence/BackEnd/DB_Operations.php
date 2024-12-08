@@ -18,62 +18,57 @@ class SQL_Operations
         }
     }
 
+    // Get database connection
+    public function getConnection()
+    {
+        return $this->conn->getConnection();
+    }
+
     // Retrieves user data for login authentication
     public function authenticate($email)
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT ua.password, ua.name_id as user_id, n.fname, n.lname, 
-                c.email, p.sex, p.civilstat
-                FROM User_Auth ua 
-                JOIN user_name n ON ua.name_id = n.name_id
-                JOIN contact c ON n.name_id = c.name_id 
+        $sql = "SELECT 
+                ua.password,
+                ua.name_id as user_id,
+                n.fname,
+                n.lname,
+                c.email,
+                p.sex,
+                p.civilstat
+                FROM contact c
+                JOIN user_name n ON c.name_id = n.name_id
+                JOIN User_Auth ua ON n.name_id = ua.name_id
                 JOIN personal p ON n.name_id = p.name_id
-                WHERE c.email = ?";
+                WHERE c.email = ?
+                LIMIT 1";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $result = $stmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            return $row;
-        }
-        return null;
+        return $result->fetch_assoc();
     }
 
     // Verifies if email is already registered in contact table
     public function check_ExistingUser($mail)
     {
-        $conn = $this->conn->getConnection();
-        $sql = "select * from contact where email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('s', $mail);
-        $stmt->execute();
-        $stmt->store_result();
-        return $stmt->num_rows() > 0;
+        return $this->checkExists('contact', ['email' => $mail]);
     }
 
     // Searches for exact name match in user_name table
     public function check_ExistingName($fname, $mname, $lname)
     {
-        $conn = $this->conn->getConnection();
-        $sql = "SELECT * FROM user_name WHERE fname = ? AND mname = ? AND lname = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sss', $fname, $mname, $lname);
-        $stmt->execute();
-        $stmt->store_result();
-        return $stmt->num_rows() > 0;
+        return $this->checkExists('user_name', [
+            'fname' => $fname,
+            'mname' => $mname,
+            'lname' => $lname
+        ]);
     }
 
     // Checks if username is already taken in user_auth table
     public function check_ExistingUsername($Name) {
-        $conn = $this->conn->getConnection();
-        $sql = "SELECT * FROM user_auth WHERE username = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('s', $Name);
-        $stmt->execute();
-        $stmt->store_result();
-        return $stmt->num_rows() > 0;
+        return $this->checkExists('user_auth', ['username' => $Name]);
     }
 
     // Formats and validates user registration data
@@ -181,15 +176,73 @@ class SQL_Operations
         }
     }
 
-    // Add these new methods for appointment operations
-    public function createAppointment($userId, $vaccineType, $appointmentDate, $appointmentTime) {
+    // Protected method to get database connection
+    protected function getDbConnection() {
+        if (!$this->conn) {
+            throw new Exception("Database connection not initialized");
+        }
+        return $this->conn->getConnection();
+    }
+
+    // Standardized error handler
+    protected function handleError($e, $operation) {
+        error_log("Database error during $operation: " . $e->getMessage());
+        if ($this->conn) {
+            $this->conn->getConnection()->rollback();
+        }
+        throw new Exception("Error during $operation: " . $e->getMessage());
+    }
+
+    // Consolidated appointment methods
+    public function getUpcomingAppointments($nameId) {
         $conn = $this->conn->getConnection();
+        $sql = "SELECT 
+            id,
+            vaccine_type,
+            appointment_date,
+            appointment_time,
+            status
+        FROM appointments 
+        WHERE name_id = ? 
+        AND appointment_date >= CURRENT_DATE
+        AND status = 'scheduled'
+        ORDER BY appointment_date ASC, appointment_time ASC";
         
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $nameId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getPastAppointments($nameId) {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT 
+            id,
+            vaccine_type,
+            appointment_date,
+            appointment_time,
+            status
+        FROM appointments 
+        WHERE name_id = ? 
+        AND (appointment_date < CURRENT_DATE 
+            OR status IN ('completed', 'cancelled'))
+        ORDER BY appointment_date DESC, appointment_time DESC";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $nameId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function createAppointment($nameId, $vaccineType, $appointmentDate, $appointmentTime) {
+        $conn = $this->conn->getConnection();
         try {
             $conn->begin_transaction();
             
             $sql = "INSERT INTO appointments (
-                user_id,
+                name_id,
                 vaccine_type,
                 appointment_date,
                 appointment_time,
@@ -198,40 +251,29 @@ class SQL_Operations
             ) VALUES (?, ?, ?, ?, 'scheduled', NOW())";
             
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param('isss', $userId, $vaccineType, $appointmentDate, $appointmentTime);
+            $stmt->bind_param('isss', $nameId, $vaccineType, $appointmentDate, $appointmentTime);
             $stmt->execute();
             
             $conn->commit();
             return true;
-            
         } catch (Exception $e) {
             $conn->rollback();
             throw $e;
         }
     }
 
-    public function getUpcomingAppointments($userId) {
+    public function updateAppointmentStatus($appointmentId, $nameId, $status) {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT 
-            id,
-            vaccine_type,
-            appointment_date,
-            appointment_time,
-            status
-        FROM appointments 
-        WHERE user_id = ? 
-        AND appointment_date >= CURRENT_DATE
-        AND status = 'scheduled'
-        ORDER BY appointment_date ASC, appointment_time ASC";
+        $sql = "UPDATE appointments 
+                SET status = ? 
+                WHERE id = ? AND name_id = ?";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->bind_param('sii', $status, $appointmentId, $nameId);
+        return $stmt->execute();
     }
 
-    public function getNextAppointment($userId) {
+    public function getNextAppointment($nameId) {
         $conn = $this->conn->getConnection();
         $sql = "SELECT 
             id,
@@ -240,84 +282,174 @@ class SQL_Operations
             appointment_time,
             status
         FROM appointments 
-        WHERE user_id = ? 
+        WHERE name_id = ? 
         AND appointment_date >= CURRENT_DATE
         AND status = 'scheduled'
         ORDER BY appointment_date ASC, appointment_time ASC
         LIMIT 1";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $userId);
+        $stmt->bind_param('i', $nameId);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
 
-    public function getUpcomingDoses($userId) {
+    public function getUpcomingDoses($nameId) {
         $conn = $this->conn->getConnection();
         $sql = "SELECT 
-            vs.vaccine_name,
-            COUNT(v.vaccine_id) as doses_received,
-            vs.total_doses,
-            CASE 
-                WHEN COUNT(v.vaccine_id) < vs.total_doses THEN vs.total_doses - COUNT(v.vaccine_id)
-                ELSE 0 
-            END as doses_remaining
-        FROM vaccine_schedule vs
-        LEFT JOIN vaccine v ON v.vaccine_name = vs.vaccine_name AND v.name_id = ?
-        GROUP BY vs.vaccine_name, vs.total_doses
-        HAVING doses_remaining > 0
-        ORDER BY vs.vaccine_name";
+                v.vaccine_name,
+                COUNT(a.id) as doses_received
+                FROM appointments a
+                JOIN vaccines v ON a.vaccine_id = v.vaccine_id
+                WHERE a.name_id = ?
+                AND a.status = 'completed'
+                GROUP BY v.vaccine_name";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $userId);
+        $stmt->bind_param('i', $nameId);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function updateAppointmentStatus($appointmentId, $userId, $status) {
+    public function getProfile($nameId) {
         $conn = $this->conn->getConnection();
+        $sql = "SELECT 
+                n.fname, n.mname, n.lname,
+                c.email as mail, c.contact,
+                p.sex, p.civilstat, p.birthday,
+                a.address, a.barangay,
+                h.allergy_description, h.disease_description,
+                e.employment_stat as employmentstat, e.employer, e.profession,
+                p.nationality
+                FROM user_name n
+                LEFT JOIN personal p ON p.name_id = n.name_id
+                LEFT JOIN contact c ON c.name_id = n.name_id
+                LEFT JOIN address a ON a.name_id = n.name_id
+                LEFT JOIN employment e ON e.name_id = n.name_id
+                LEFT JOIN Health h ON h.name_id = n.name_id
+                WHERE n.name_id = ?";
         
+        error_log("Executing profile query for name_id: " . $nameId);
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $nameId);
+        $stmt->execute();
+        $userData = $stmt->get_result()->fetch_assoc();
+        
+        if ($userData) {
+            error_log('Profile found: ' . print_r($userData, true));
+            return [
+                'success' => true,
+                'userData' => $userData
+            ];
+        } else {
+            error_log('Profile not found for name_id: ' . $nameId);
+            return [
+                'success' => false,
+                'message' => 'Profile not found'
+            ];
+        }
+    }
+
+    public function updateProfile($nameId, $data) {
+        $conn = $this->conn->getConnection();
         try {
-            $sql = "UPDATE appointments 
-                    SET status = ? 
-                    WHERE id = ? AND user_id = ?";
-            
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('sii', $status, $appointmentId, $userId);
-            $stmt->execute();
-            
-            return $stmt->affected_rows > 0;
+            $conn->begin_transaction();
+
+            // Update user_name table
+            $nameQuery = "UPDATE user_name SET fname=?, mname=?, lname=? WHERE name_id=?";
+            $nameStmt = $conn->prepare($nameQuery);
+            $nameStmt->bind_param('sssi', $data['fname'], $data['mname'], $data['lname'], $nameId);
+            $nameStmt->execute();
+
+            // Update contact table
+            $contactQuery = "UPDATE contact SET email=?, contact=? WHERE name_id=?";
+            $contactStmt = $conn->prepare($contactQuery);
+            $contactStmt->bind_param('ssi', $data['email'], $data['contact'], $nameId);
+            $contactStmt->execute();
+
+            // Update personal table
+            $personalQuery = "UPDATE personal SET birthday=?, sex=?, civilstat=?, address=? WHERE name_id=?";
+            $personalStmt = $conn->prepare($personalQuery);
+            $personalStmt->bind_param('ssssi', $data['birthday'], $data['sex'], $data['civilstat'], $data['address'], $nameId);
+            $personalStmt->execute();
+
+            $conn->commit();
+            return ["success" => true, "message" => "Profile updated successfully"];
         } catch (Exception $e) {
+            $conn->rollback();
             throw $e;
         }
     }
 
-    public function getPastAppointments($userId) {
+    public function deleteProfile($nameId) {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT 
-            id,
-            vaccine_type,
-            appointment_date,
-            appointment_time,
-            status
-        FROM appointments 
-        WHERE user_id = ? 
-        AND (appointment_date < CURRENT_DATE 
-            OR status IN ('completed', 'cancelled'))
-        ORDER BY appointment_date DESC, appointment_time DESC";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        try {
+            $conn->begin_transaction();
+            
+            // Delete in reverse order of dependencies
+            $tables = ['appointments', 'health', 'contact', 'address', 'employment', 'user_auth', 'personal', 'user_name'];
+            
+            foreach ($tables as $table) {
+                $sql = "DELETE FROM $table WHERE name_id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i', $nameId);
+                $stmt->execute();
+            }
+            
+            $conn->commit();
+            return ["success" => true, "message" => "Profile deleted successfully"];
+        } catch (Exception $e) {
+            $conn->rollback();
+            throw $e;
+        }
     }
 
     // Closes active database connection and frees resources
     public function close()
     {
         $this->conn->close();
+    }
+
+    // Optimized existence check method
+    private function checkExists($table, $conditions) {
+        $conn = $this->conn->getConnection();
+        $where = [];
+        $params = [];
+        $types = '';
+        
+        foreach ($conditions as $field => $value) {
+            $where[] = "$field = ?";
+            $params[] = $value;
+            $types .= is_int($value) ? 'i' : 's';
+        }
+        
+        $sql = "SELECT 1 FROM $table WHERE " . implode(' AND ', $where) . " LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows() > 0;
+    }
+
+    // Optimized user data retrieval
+    private function getUserData($userId, $fields = []) {
+        $conn = $this->conn->getConnection();
+        $selectedFields = empty($fields) ? '*' : implode(', ', $fields);
+        
+        $sql = "SELECT $selectedFields 
+                FROM user_name n
+                LEFT JOIN personal p ON n.name_id = p.name_id
+                LEFT JOIN contact c ON n.name_id = c.name_id
+                LEFT JOIN address a ON n.name_id = a.name_id
+                LEFT JOIN employment e ON n.name_id = e.name_id
+                LEFT JOIN health h ON n.name_id = h.name_id
+                WHERE n.name_id = ?";
+                
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 }
